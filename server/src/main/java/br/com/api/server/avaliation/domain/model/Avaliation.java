@@ -5,27 +5,31 @@ import br.com.api.server.patient.domain.model.Patient;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "avaliation")
+@Table(name = "avaliations")
 @NoArgsConstructor
 @Getter
 public class Avaliation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private List<Patient> patientId;
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private List<Nutritionist> nutritionistId;
+    @JoinColumn(name = "nutritionist_id", nullable = false)
+    private Nutritionist nutritionist;
 
     private BigDecimal weight;
     private BigDecimal height;

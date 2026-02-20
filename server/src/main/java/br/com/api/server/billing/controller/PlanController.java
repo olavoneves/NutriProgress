@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/billing/plans")
+@RequestMapping("/api/billing/plans")
 public class PlanController {
 
     @PostMapping

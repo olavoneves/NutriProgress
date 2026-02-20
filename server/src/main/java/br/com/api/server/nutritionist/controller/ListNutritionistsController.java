@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/nutritionists")
+@RequestMapping("/api/nutritionists")
 public class ListNutritionistsController {
 
     @GetMapping("/me")

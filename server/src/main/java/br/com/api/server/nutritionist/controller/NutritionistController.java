@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/nutritionists")
+@RequestMapping("/api/nutritionists")
 public class NutritionistController {
 
     // Adicionar logica para ser criada junto com usuário

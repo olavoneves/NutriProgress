@@ -1,5 +1,6 @@
 package br.com.api.server.nutritionist.domain.model;
 
+import br.com.api.server.user.domain.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,16 +9,18 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "nutritionist")
+@Table(name = "nutritionists")
 @NoArgsConstructor
 @Getter
 public class Nutritionist {
-    @OneToOne(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            mappedBy = "user_id"
-    )
+    @Id
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
+    @JoinColumn(name = "id")
+    private User user;
 
     private String crn;
     private String phone;

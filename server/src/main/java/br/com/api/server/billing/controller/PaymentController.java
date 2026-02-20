@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/billing/payments")
+@RequestMapping("/api/billing/payments")
 public class PaymentController {
 
     @PostMapping

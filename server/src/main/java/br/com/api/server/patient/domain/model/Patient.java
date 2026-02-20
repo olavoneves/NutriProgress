@@ -4,22 +4,25 @@ import br.com.api.server.nutritionist.domain.model.Nutritionist;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "patient")
+@Table(name = "patients")
 @NoArgsConstructor
 @Getter
 public class Patient {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private List<Nutritionist> nutritionistId;
+    @JoinColumn(name = "nutritionist_id", nullable = false)
+    private Nutritionist nutritionist;
 
     private String fullName;
 

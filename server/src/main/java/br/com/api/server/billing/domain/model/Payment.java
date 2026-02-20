@@ -3,23 +3,26 @@ package br.com.api.server.billing.domain.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payment")
+@Table(name = "payments")
 @NoArgsConstructor
 @Getter
 public class Payment {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
+    @UuidGenerator
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private List<Subscription> subscriptionId;
+    @JoinColumn(name = "subscription_id", nullable = false)
+    private Subscription subscriptionId;
 
     @Enumerated(EnumType.STRING)
     private Gateway gateway;

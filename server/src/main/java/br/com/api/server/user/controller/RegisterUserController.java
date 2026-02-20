@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class RegisterUserController {
 
     @PostMapping

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/avaliations")
+@RequestMapping("/api/avaliations")
 public class UpdateAvaliationController {
 
     @PutMapping("/{id}")
