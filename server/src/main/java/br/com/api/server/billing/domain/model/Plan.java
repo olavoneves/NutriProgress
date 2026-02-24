@@ -27,4 +27,9 @@ public class Plan {
     private String features;
     private Boolean active;
     private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

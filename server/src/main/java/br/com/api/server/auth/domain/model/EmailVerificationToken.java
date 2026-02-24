@@ -30,4 +30,8 @@ public class EmailVerificationToken {
     private Boolean verified;
     private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

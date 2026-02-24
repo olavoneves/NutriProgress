@@ -30,4 +30,8 @@ public class PasswordResetToken {
     private Boolean used;
     private LocalDateTime createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 }

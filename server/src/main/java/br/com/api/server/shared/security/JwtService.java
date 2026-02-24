@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Service
 public class JwtService {
@@ -70,5 +71,9 @@ public class JwtService {
 
     public Instant expiresIn(Integer minutes) {
         return Instant.now().plusSeconds(minutes * 60L);
+    }
+
+    public Integer getRefreshExpirationInMinutes() {
+        return expirationRefreshToken;
     }
 }
