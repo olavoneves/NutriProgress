@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useClickOutside } from '@hooks/useClickOutside';
 import {
   HeaderContainer,
   HeaderContent,
@@ -25,6 +26,7 @@ export interface HeaderProps {
   userInfo?: string;
   userAvatar?: string;
   onLogout?: () => void;
+  onToggleSidebar?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -32,10 +34,14 @@ export const Header: React.FC<HeaderProps> = ({
   userInfo,
   userAvatar,
   onLogout,
+  onToggleSidebar,
 }) => {
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const closeDropdown = useCallback(() => setIsDropdownOpen(false), []);
+  const dropdownRef = useClickOutside<HTMLDivElement>(closeDropdown, isDropdownOpen);
 
   const handleNavigate = (path: string) => {
     navigate(path);
@@ -89,6 +95,21 @@ export const Header: React.FC<HeaderProps> = ({
           <LogoText>NutriProgress</LogoText>
         </Logo>
 
+        {/* Sidebar Toggle */}
+        {onToggleSidebar && (
+          <NavItem
+            onClick={onToggleSidebar}
+            aria-label="Alternar sidebar"
+            className="desktop-only"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </NavItem>
+        )}
+
         {/* Navigation - Desktop */}
         <Nav>
           <NavItem onClick={() => handleNavigate('/dashboard')}>
@@ -100,7 +121,7 @@ export const Header: React.FC<HeaderProps> = ({
         </Nav>
 
         {/* User Section */}
-        <UserSection>
+        <UserSection ref={dropdownRef}>
           <UserAvatar onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
             {userAvatar ? (
               <img src={userAvatar} alt={userName} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from '../Header';
 import { Sidebar } from '../Sidebar';
@@ -39,6 +39,10 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
 }) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(initialCollapsed);
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(prev => !prev);
+  };
+
   return (
     <LayoutContainer>
       {!hideHeader && (
@@ -47,6 +51,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
           userInfo={userInfo}
           userAvatar={userAvatar}
           onLogout={onLogout}
+          onToggleSidebar={!hideSidebar ? toggleSidebar : undefined}
         />
       )}
 

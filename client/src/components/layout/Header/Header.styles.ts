@@ -9,27 +9,27 @@ interface MobileNavItemProps {
 }
 
 export const HeaderContainer = styled.header`
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   position: sticky;
   top: 0;
-  z-index: 1000;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  z-index: ${({ theme }) => theme.zIndex.header};
+  box-shadow: ${({ theme }) => theme.shadows.md};
 `;
 
 export const HeaderContent = styled.div`
-  max-width: 1280px;
+  max-width: ${({ theme }) => theme.layout.maxContentWidth};
   margin: 0 auto;
-  padding: 0 1.5rem;
-  height: 4rem;
+  padding: 0 ${({ theme }) => theme.spacing.lg};
+  height: ${({ theme }) => theme.layout.headerHeight};
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
+  gap: ${({ theme }) => theme.spacing.xl};
 
-  @media (max-width: 768px) {
-    padding: 0 1rem;
-    gap: 1rem;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 0 ${({ theme }) => theme.spacing.md};
+    gap: ${({ theme }) => theme.spacing.md};
   }
 `;
 
@@ -39,7 +39,7 @@ export const Logo = styled.div`
   gap: 0.75rem;
   cursor: pointer;
   user-select: none;
-  transition: opacity 0.2s ease-in-out;
+  transition: opacity ${({ theme }) => theme.transitions.normal};
 
   &:hover {
     opacity: 0.8;
@@ -47,11 +47,11 @@ export const Logo = styled.div`
 `;
 
 export const LogoText = styled.span`
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.text.primary};
 
-  @media (max-width: 480px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     display: none;
   }
 `;
@@ -59,11 +59,11 @@ export const LogoText = styled.span`
 export const Nav = styled.nav`
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: ${({ theme }) => theme.spacing.xl};
   flex: 1;
-  margin-left: 2rem;
+  margin-left: ${({ theme }) => theme.spacing.xl};
 
-  @media (max-width: 768px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
   }
 `;
@@ -72,21 +72,21 @@ export const NavItem = styled.button`
   background: none;
   border: none;
   font-size: 0.938rem;
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.gray[500]};
   cursor: pointer;
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease-in-out;
+  padding: ${({ theme }) => theme.spacing.sm} 0.75rem;
+  border-radius: ${({ theme }) => theme.radii.md};
+  transition: all ${({ theme }) => theme.transitions.normal};
   font-family: inherit;
 
   &:hover {
-    color: #10b981;
-    background-color: #f0fdf4;
+    color: ${({ theme }) => theme.colors.primary[500]};
+    background-color: ${({ theme }) => theme.colors.primary[50]};
   }
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: 2px;
   }
 `;
@@ -98,7 +98,7 @@ export const UserSection = styled.div`
   position: relative;
 
   .desktop-only {
-    @media (max-width: 768px) {
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
       display: none;
     }
   }
@@ -113,16 +113,16 @@ export const UserSection = styled.div`
 export const UserAvatar = styled.div`
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: ${({ theme }) => theme.radii.full};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary[500]} 0%, ${({ theme }) => theme.colors.primary[600]} 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.white};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
+  transition: transform ${({ theme }) => theme.transitions.normal};
   overflow: hidden;
 
   &:hover {
@@ -147,52 +147,52 @@ export const UserInfo = styled.div`
 `;
 
 export const UserName = styled.span`
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.2;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.text.primary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
 `;
 
 export const UserRole = styled.span`
-  font-size: 0.75rem;
-  color: #6b7280;
-  line-height: 1.2;
+  font-size: ${({ theme }) => theme.typography.fontSize.xs};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.tight};
 `;
 
 export const DropdownButton = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
+  color: ${({ theme }) => theme.colors.gray[500]};
   cursor: pointer;
-  padding: 0.25rem;
+  padding: ${({ theme }) => theme.spacing.xs};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.25rem;
-  transition: all 0.2s ease-in-out;
+  border-radius: ${({ theme }) => theme.radii.sm};
+  transition: all ${({ theme }) => theme.transitions.normal};
 
   &:hover {
-    color: #111827;
-    background-color: #f3f4f6;
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.gray[100]};
   }
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: 2px;
   }
 `;
 
 export const DropdownMenu = styled.div`
   position: absolute;
-  top: calc(100% + 0.5rem);
+  top: calc(100% + ${({ theme }) => theme.spacing.sm});
   right: 0;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  background-color: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  box-shadow: ${({ theme }) => theme.shadows.xl};
   min-width: 200px;
-  padding: 0.5rem;
-  z-index: 50;
+  padding: ${({ theme }) => theme.spacing.sm};
+  z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
 export const DropdownItem = styled.button<DropdownItemProps>`
@@ -200,36 +200,36 @@ export const DropdownItem = styled.button<DropdownItemProps>`
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem ${({ theme }) => theme.spacing.md};
   background: none;
   border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  border-radius: ${({ theme }) => theme.radii.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.gray[700]};
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all ${({ theme }) => theme.transitions.normal};
   font-family: inherit;
   text-align: left;
 
-  ${({ $danger }) => $danger && css`
-    color: #ef4444;
+  ${({ $danger, theme }) => $danger && css`
+    color: ${theme.colors.danger[500]};
 
     &:hover {
-      background-color: #fef2f2;
-      color: #dc2626;
+      background-color: ${theme.colors.danger[50]};
+      color: ${theme.colors.danger[600]};
     }
   `}
 
-  ${({ $danger }) => !$danger && css`
+  ${({ $danger, theme }) => !$danger && css`
     &:hover {
-      background-color: #f3f4f6;
-      color: #111827;
+      background-color: ${theme.colors.gray[100]};
+      color: ${theme.colors.text.primary};
     }
   `}
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: -2px;
   }
 
@@ -241,33 +241,33 @@ export const DropdownItem = styled.button<DropdownItemProps>`
 export const MenuButton = styled.button`
   background: none;
   border: none;
-  color: #6b7280;
+  color: ${({ theme }) => theme.colors.gray[500]};
   cursor: pointer;
-  padding: 0.5rem;
+  padding: ${({ theme }) => theme.spacing.sm};
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease-in-out;
+  border-radius: ${({ theme }) => theme.radii.md};
+  transition: all ${({ theme }) => theme.transitions.normal};
 
   &:hover {
-    color: #111827;
-    background-color: #f3f4f6;
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.gray[100]};
   }
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: 2px;
   }
 `;
 
 export const MobileMenu = styled.div`
-  background-color: #ffffff;
-  border-top: 1px solid #e5e7eb;
-  padding: 1rem;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  padding: ${({ theme }) => theme.spacing.md};
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: ${({ theme }) => theme.spacing.sm};
 
   @media (min-width: 769px) {
     display: none;
@@ -276,36 +276,36 @@ export const MobileMenu = styled.div`
 
 export const MobileNavItem = styled.button<MobileNavItemProps>`
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem ${({ theme }) => theme.spacing.md};
   background: none;
   border: none;
-  border-radius: 0.375rem;
+  border-radius: ${({ theme }) => theme.radii.md};
   font-size: 0.938rem;
-  font-weight: 500;
-  color: #374151;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.gray[700]};
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all ${({ theme }) => theme.transitions.normal};
   font-family: inherit;
   text-align: left;
 
-  ${({ $danger }) => $danger && css`
-    color: #ef4444;
+  ${({ $danger, theme }) => $danger && css`
+    color: ${theme.colors.danger[500]};
 
     &:hover {
-      background-color: #fef2f2;
-      color: #dc2626;
+      background-color: ${theme.colors.danger[50]};
+      color: ${theme.colors.danger[600]};
     }
   `}
 
-  ${({ $danger }) => !$danger && css`
+  ${({ $danger, theme }) => !$danger && css`
     &:hover {
-      background-color: #f3f4f6;
-      color: #111827;
+      background-color: ${theme.colors.gray[100]};
+      color: ${theme.colors.text.primary};
     }
   `}
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: -2px;
   }
 `;

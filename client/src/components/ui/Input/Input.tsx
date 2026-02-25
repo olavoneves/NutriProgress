@@ -1,5 +1,6 @@
-import React, { forwardRef } from 'react';
-import { InputContainer, InputWrapper, Label, HelperText, ErrorText } from './Input.styles.ts';
+import { useId, forwardRef } from 'react';
+import type React from 'react';
+import { InputContainer, InputWrapper, Label, HelperText, ErrorText } from './Input.styles';
 
 export type InputVariant = 'default' | 'filled' | 'outline';
 export type InputSize = 'small' | 'medium' | 'large';
@@ -35,7 +36,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const inputId = id || `input-${Math.random().toString(36).substring(7)}`;
+    const generatedId = useId();
+    const inputId = id || generatedId;
     const hasError = Boolean(error);
 
     return (
@@ -46,7 +48,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {required && <span className="required">*</span>}
           </Label>
         )}
-        
+
         <InputContainer
           variant={variant}
           size={size}
@@ -56,7 +58,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           hasRightIcon={Boolean(rightIcon)}
         >
           {leftIcon && <span className="icon-left">{leftIcon}</span>}
-          
+
           <input
             ref={ref}
             id={inputId}
@@ -67,7 +69,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             }
             {...rest}
           />
-          
+
           {rightIcon && <span className="icon-right">{rightIcon}</span>}
         </InputContainer>
 
@@ -76,7 +78,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {error}
           </ErrorText>
         )}
-        
+
         {!error && helperText && (
           <HelperText id={`${inputId}-helper`}>
             {helperText}
