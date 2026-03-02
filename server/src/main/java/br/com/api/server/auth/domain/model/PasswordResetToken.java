@@ -4,6 +4,7 @@ import br.com.api.server.user.domain.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Table(name = "password_reset_tokens")
 @NoArgsConstructor
 @Getter
+@Setter
 public class PasswordResetToken {
     @Id
     @GeneratedValue
