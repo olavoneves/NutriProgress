@@ -15,10 +15,6 @@ public class ListUserService {
     }
 
     public UserDetailsData listUser(User user) {
-        return new UserDetailsData(userRepository
-                .findByEmailIgnoreCase(user.getUsername())
-                .orElseThrow(
-                        () -> new RuntimeException("Invalid user")
-                ));
+        return new UserDetailsData(user);
     }
 }
