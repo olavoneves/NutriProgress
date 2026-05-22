@@ -1,9 +1,15 @@
 package com.nutriprogress.shared.exception;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.nutriprogress.modules.auth.exception.InvalidCredentialsException;
+import com.nutriprogress.modules.auth.exception.TokenExpiredException;
+import com.nutriprogress.modules.auth.exception.UserAlreadyExistsException;
 import com.nutriprogress.shared.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,6 +17,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -22,6 +29,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorized(UnauthorizedException ex, HttpServletRequest req) {
         return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler({InvalidCredentialsException.class, BadCredentialsException.class})
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(Exception ex, HttpServletRequest req) {
+        log.warn("Credenciais invalidas: {}", ex.getMessage());
+        return build(HttpStatus.UNAUTHORIZED, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler({TokenExpiredException.class, JWTVerificationException.class})
+    public ResponseEntity<ErrorResponse> handleTokenException(Exception ex, HttpServletRequest req) {
+        log.warn("Erro de token: {}", ex.getMessage());
+        return build(HttpStatus.UNAUTHORIZED, "Token invalido ou expirado", req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex, HttpServletRequest req) {
+        log.warn("Usuario ja existe: {}", ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI(), null);
     }
 
     @ExceptionHandler(ValidationException.class)
@@ -39,6 +64,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex, HttpServletRequest req) {
+        log.error("Erro interno", ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno: " + ex.getMessage(), req.getRequestURI(), null);
     }
 
