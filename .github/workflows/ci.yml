@@ -12,15 +12,16 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
-        image: mysql:8.0
+      postgres:
+        image: postgres:16
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: nutri_progress_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nutriprogress_dev
         ports:
-          - 3306:3306
+          - 5432:5432
         options: >-
-          --health-cmd="mysqladmin ping -h localhost"
+          --health-cmd="pg_isready -U postgres"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -42,13 +43,10 @@ jobs:
       - name: Build and test
         run: ./mvnw verify --no-transfer-progress
         env:
-          DATASOURCE_USERNAME: root
-          DB_PASSWORD: root
-          JWT_TOKEN_SECRET: ci-test-secret-at-least-32-chars-long
-          JWT_ACCESS_TOKEN_EXPIRATION: 15
-          JWT_REFRESH_TOKEN_EXPIRATION: 10080
-          EMAIL_BIOGURT: test@test.com
-          SENHA_LD: test
+          SPRING_PROFILE: dev
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          JWT_SECRET: ci-test-secret-at-least-32-chars-long-do-not-use-in-prod
 
   frontend:
     name: Frontend — Lint, Type-check & Build
