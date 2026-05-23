@@ -12,4 +12,8 @@ import java.util.UUID;
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
     Page<Patient> findByNutritionistIdAndIsActive(UUID nutritionistId, Boolean isActive, Pageable pageable);
+
+    long countByNutritionistId(UUID nutritionistId);
+
+    long countByNutritionistIdAndIsActive(UUID nutritionistId, Boolean isActive);
 }

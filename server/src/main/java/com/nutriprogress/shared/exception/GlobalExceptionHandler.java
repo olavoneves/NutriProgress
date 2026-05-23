@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.nutriprogress.modules.auth.exception.InvalidCredentialsException;
 import com.nutriprogress.modules.auth.exception.TokenExpiredException;
 import com.nutriprogress.modules.auth.exception.UserAlreadyExistsException;
+import com.nutriprogress.modules.nutritionist.exception.SubscriptionLimitExceededException;
 import com.nutriprogress.shared.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> handleValidation(ValidationException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(SubscriptionLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> handleSubscriptionLimit(SubscriptionLimitExceededException ex, HttpServletRequest req) {
+        log.warn("Limite de assinatura excedido: {}", ex.getMessage());
+        return build(HttpStatus.PAYMENT_REQUIRED, ex.getMessage(), req.getRequestURI(), null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
