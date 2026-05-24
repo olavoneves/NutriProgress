@@ -1,5 +1,6 @@
 package com.nutriprogress.modules.auth.dto;
 
+import com.nutriprogress.modules.nutritionist.entity.Specialty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -20,7 +21,7 @@ public record RegisterRequest(
         String crn,
 
         String phone,
-        String specialty,
+        Specialty specialty,
         String clinicName
 ) {
 }

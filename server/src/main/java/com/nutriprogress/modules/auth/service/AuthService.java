@@ -10,7 +10,6 @@ import com.nutriprogress.modules.auth.exception.InvalidCredentialsException;
 import com.nutriprogress.modules.auth.exception.TokenExpiredException;
 import com.nutriprogress.modules.auth.exception.UserAlreadyExistsException;
 import com.nutriprogress.modules.nutritionist.entity.Nutritionist;
-import com.nutriprogress.modules.nutritionist.entity.Specialty;
 import com.nutriprogress.modules.nutritionist.repository.NutritionistRepository;
 import com.nutriprogress.modules.user.entity.User;
 import com.nutriprogress.modules.user.entity.UserRole;
@@ -91,7 +90,7 @@ public class AuthService {
                 .crn(request.crn())
                 .phone(request.phone())
                 .clinicName(request.clinicName())
-                .specialty(request.specialty() != null ? Specialty.valueOf(request.specialty()) : null)
+                .specialty(request.specialty())
                 .build();
         nutritionistRepository.save(nutritionist);
 
