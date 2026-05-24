@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -71,6 +72,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedPatientAccess(UnauthorizedPatientAccessException ex, HttpServletRequest req) {
         log.warn("Acesso nao autorizado a paciente: {}", ex.getMessage());
         return build(HttpStatus.FORBIDDEN, "Voce nao tem permissao para acessar este paciente", req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
+        String message = "Corpo da requisicao invalido";
+        String cause = ex.getMessage();
+        if (cause != null && cause.contains("not one of the values accepted")) {
+            message = "Valor invalido para campo enum. " + cause.replaceAll(".*\\(([^)]+)\\).*", "Valores aceitos: $1");
+        } else if (cause != null && cause.contains("Cannot deserialize value of type")) {
+            message = "Formato de valor invalido no corpo da requisicao";
+        }
+        log.warn("Requisicao mal formada: {}", ex.getMessage());
+        return build(HttpStatus.BAD_REQUEST, message, req.getRequestURI(), null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

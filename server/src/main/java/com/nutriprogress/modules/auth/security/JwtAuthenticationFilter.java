@@ -2,13 +2,17 @@ package com.nutriprogress.modules.auth.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nutriprogress.modules.auth.service.JwtService;
+import com.nutriprogress.shared.dto.ErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -30,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Override
     protected void doFilterInternal(
@@ -65,18 +71,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (TokenExpiredException e) {
             log.warn("Token expirado: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token expirado");
+            writeJsonError(response, request.getRequestURI(), "Token expirado");
             return;
         } catch (JWTVerificationException e) {
             log.error("Erro JWT: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token invalido");
+            writeJsonError(response, request.getRequestURI(), "Token invalido");
             return;
         } catch (Exception e) {
             log.error("Erro no filtro de autenticacao: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void writeJsonError(HttpServletResponse response, String path, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        ErrorResponse error = new ErrorResponse(
+                HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", message, path, null, LocalDateTime.now()
+        );
+        objectMapper.writeValue(response.getOutputStream(), error);
     }
 }
