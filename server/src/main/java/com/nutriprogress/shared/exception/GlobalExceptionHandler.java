@@ -5,6 +5,7 @@ import com.nutriprogress.modules.auth.exception.InvalidCredentialsException;
 import com.nutriprogress.modules.auth.exception.TokenExpiredException;
 import com.nutriprogress.modules.auth.exception.UserAlreadyExistsException;
 import com.nutriprogress.modules.nutritionist.exception.SubscriptionLimitExceededException;
+import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
 import com.nutriprogress.shared.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -64,6 +65,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleSubscriptionLimit(SubscriptionLimitExceededException ex, HttpServletRequest req) {
         log.warn("Limite de assinatura excedido: {}", ex.getMessage());
         return build(HttpStatus.PAYMENT_REQUIRED, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(UnauthorizedPatientAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedPatientAccess(UnauthorizedPatientAccessException ex, HttpServletRequest req) {
+        log.warn("Acesso nao autorizado a paciente: {}", ex.getMessage());
+        return build(HttpStatus.FORBIDDEN, "Voce nao tem permissao para acessar este paciente", req.getRequestURI(), null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
