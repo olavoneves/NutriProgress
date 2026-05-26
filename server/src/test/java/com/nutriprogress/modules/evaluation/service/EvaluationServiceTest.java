@@ -14,6 +14,7 @@ import com.nutriprogress.modules.patient.entity.Patient;
 import com.nutriprogress.modules.patient.exception.PatientNotFoundException;
 import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
 import com.nutriprogress.modules.patient.repository.PatientRepository;
+import com.nutriprogress.shared.event.EventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,9 @@ class EvaluationServiceTest {
 
     @Mock
     private EvaluationMapper mapper;
+
+    @Mock
+    private EventPublisher eventPublisher;
 
     @InjectMocks
     private EvaluationService evaluationService;

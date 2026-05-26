@@ -11,6 +11,8 @@ import com.nutriprogress.modules.patient.exception.PatientNotFoundException;
 import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
 import com.nutriprogress.modules.patient.mapper.PatientMapper;
 import com.nutriprogress.modules.patient.repository.PatientRepository;
+import com.nutriprogress.modules.user.entity.User;
+import com.nutriprogress.shared.event.EventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +51,9 @@ class PatientServiceTest {
     @Mock
     private PatientMapper mapper;
 
+    @Mock
+    private EventPublisher eventPublisher;
+
     @InjectMocks
     private PatientService patientService;
 
@@ -62,8 +67,12 @@ class PatientServiceTest {
         nutritionistId = UUID.randomUUID();
         patientId = UUID.randomUUID();
 
+        User user = new User();
+        user.setEmail("nutri@example.com");
+
         nutritionist = new Nutritionist();
         nutritionist.setId(nutritionistId);
+        nutritionist.setUser(user);
 
         patient = new Patient();
         patient.setId(patientId);

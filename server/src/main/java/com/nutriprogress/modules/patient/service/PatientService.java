@@ -19,6 +19,8 @@ import com.nutriprogress.modules.patient.mapper.PatientMapper;
 import com.nutriprogress.modules.patient.repository.PatientRepository;
 import com.nutriprogress.modules.patient.specification.PatientSpecification;
 import com.nutriprogress.shared.dto.PageResponse;
+import com.nutriprogress.shared.event.EventPublisher;
+import com.nutriprogress.shared.event.events.PatientCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -43,6 +46,7 @@ public class PatientService {
     private final EvaluationRepository evaluationRepository;
     private final NutritionistService nutritionistService;
     private final PatientMapper mapper;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public PatientDTO create(UUID nutritionistId, CreatePatientRequest request) {
@@ -67,6 +71,15 @@ public class PatientService {
 
         patient = patientRepository.save(patient);
         log.info("Paciente criado com sucesso: {}", patient.getId());
+
+        eventPublisher.publish(PatientCreatedEvent.builder()
+                .eventId(UUID.randomUUID())
+                .occurredAt(LocalDateTime.now())
+                .aggregateId(patient.getId())
+                .patientName(patient.getFullName())
+                .nutritionistId(nutritionist.getId())
+                .nutritionistEmail(nutritionist.getUser().getEmail())
+                .build());
 
         return mapper.toDTO(patient);
     }

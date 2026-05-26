@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Paciente Cadastrado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #10b981;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9fafb;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Novo Paciente Cadastrado</h2>
+    </div>
+
+    <div class="content">
+        <p>Olá!</p>
+
+        <p>Um novo paciente foi cadastrado com sucesso:</p>
+
+        <p><strong th:text="${patientName}">Nome do Paciente</strong></p>
+
+        <p>Você já pode registrar a primeira avaliação e começar o acompanhamento!</p>
+    </div>
+</body>
+</html>
