@@ -14,6 +14,8 @@ import com.nutriprogress.modules.nutritionist.repository.NutritionistRepository;
 import com.nutriprogress.modules.user.entity.User;
 import com.nutriprogress.modules.user.entity.UserRole;
 import com.nutriprogress.modules.user.repository.UserRepository;
+import com.nutriprogress.shared.event.EventPublisher;
+import com.nutriprogress.shared.event.events.UserRegisteredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -36,6 +39,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
     private final AuthenticationManager authenticationManager;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public LoginResponse login(LoginRequest request) {
@@ -93,6 +97,15 @@ public class AuthService {
                 .specialty(request.specialty())
                 .build();
         nutritionistRepository.save(nutritionist);
+
+        eventPublisher.publish(UserRegisteredEvent.builder()
+                .eventId(UUID.randomUUID())
+                .occurredAt(LocalDateTime.now())
+                .aggregateId(user.getId())
+                .email(user.getEmail())
+                .fullName(nutritionist.getFullName())
+                .role(user.getRole().name())
+                .build());
 
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);

@@ -16,11 +16,14 @@ import com.nutriprogress.modules.patient.entity.Patient;
 import com.nutriprogress.modules.patient.exception.PatientNotFoundException;
 import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
 import com.nutriprogress.modules.patient.repository.PatientRepository;
+import com.nutriprogress.shared.event.EventPublisher;
+import com.nutriprogress.shared.event.events.EvaluationCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +36,7 @@ public class EvaluationService {
     private final PatientRepository patientRepository;
     private final NutritionistRepository nutritionistRepository;
     private final EvaluationMapper mapper;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public EvaluationDTO create(UUID nutritionistId, UUID patientId, CreateEvaluationRequest request) {
@@ -69,6 +73,18 @@ public class EvaluationService {
 
         evaluation = evaluationRepository.save(evaluation);
         log.info("Avaliacao criada com sucesso: {} (Numero: {})", evaluation.getId(), evaluation.getEvaluationNumber());
+
+        eventPublisher.publish(EvaluationCreatedEvent.builder()
+                .eventId(UUID.randomUUID())
+                .occurredAt(LocalDateTime.now())
+                .aggregateId(evaluation.getId())
+                .patientId(patient.getId())
+                .patientName(patient.getFullName())
+                .nutritionistId(nutritionist.getId())
+                .evaluationNumber(evaluation.getEvaluationNumber())
+                .evaluationDate(evaluation.getEvaluationDate())
+                .weight(evaluation.getWeight())
+                .build());
 
         return mapper.toDTO(evaluation);
     }
