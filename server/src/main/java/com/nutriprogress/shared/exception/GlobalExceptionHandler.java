@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.nutriprogress.modules.auth.exception.InvalidCredentialsException;
 import com.nutriprogress.modules.auth.exception.TokenExpiredException;
 import com.nutriprogress.modules.auth.exception.UserAlreadyExistsException;
+import com.nutriprogress.modules.billing.exception.BillingException;
 import com.nutriprogress.modules.nutritionist.exception.SubscriptionLimitExceededException;
 import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
 import com.nutriprogress.shared.dto.ErrorResponse;
@@ -59,6 +60,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI(), null);
+    }
+
+    @ExceptionHandler(BillingException.class)
+    public ResponseEntity<ErrorResponse> handleBillingException(BillingException ex, HttpServletRequest req) {
+        log.error("Billing error: {}", ex.getMessage());
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI(), null);
     }
 

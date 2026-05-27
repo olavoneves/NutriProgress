@@ -72,6 +72,17 @@ google:
   oauth:
     client-id: ${GOOGLE_OAUTH_CLIENT_ID:your-google-client-id}
 
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:sk_test_placeholder}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_placeholder}
+  price:
+    starter: ${STRIPE_PRICE_STARTER:price_placeholder}
+    pro: ${STRIPE_PRICE_PRO:price_placeholder}
+    premium: ${STRIPE_PRICE_PREMIUM:price_placeholder}
+
+app:
+  url: ${APP_URL:http://localhost:3000}
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

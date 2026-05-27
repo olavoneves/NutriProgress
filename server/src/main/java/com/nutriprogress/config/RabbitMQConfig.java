@@ -58,39 +58,67 @@ public class RabbitMQConfig {
     }
 
     // ========================================================================
-    // QUEUES - EVENTS
+    // QUEUES + DLQ — USER EVENTS
     // ========================================================================
 
     public static final String USER_EVENTS_QUEUE = "nutriprogress.events.user";
-    public static final String PATIENT_EVENTS_QUEUE = "nutriprogress.events.patient";
-    public static final String EVALUATION_EVENTS_QUEUE = "nutriprogress.events.evaluation";
+    public static final String USER_EVENTS_DLQ   = "nutriprogress.events.user.dlq";
 
     @Bean
     public Queue userEventsQueue() {
         return QueueBuilder.durable(USER_EVENTS_QUEUE)
-                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
+                .withArgument("x-dead-letter-exchange",    DLX_EXCHANGE)
                 .withArgument("x-dead-letter-routing-key", "user.events.dead")
                 .build();
     }
 
     @Bean
+    public Queue userEventsDLQ() {
+        return QueueBuilder.durable(USER_EVENTS_DLQ).build();
+    }
+
+    // ========================================================================
+    // QUEUES + DLQ — PATIENT EVENTS
+    // ========================================================================
+
+    public static final String PATIENT_EVENTS_QUEUE = "nutriprogress.events.patient";
+    public static final String PATIENT_EVENTS_DLQ   = "nutriprogress.events.patient.dlq";
+
+    @Bean
     public Queue patientEventsQueue() {
         return QueueBuilder.durable(PATIENT_EVENTS_QUEUE)
-                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
+                .withArgument("x-dead-letter-exchange",    DLX_EXCHANGE)
                 .withArgument("x-dead-letter-routing-key", "patient.events.dead")
                 .build();
     }
 
     @Bean
+    public Queue patientEventsDLQ() {
+        return QueueBuilder.durable(PATIENT_EVENTS_DLQ).build();
+    }
+
+    // ========================================================================
+    // QUEUES + DLQ — EVALUATION EVENTS
+    // ========================================================================
+
+    public static final String EVALUATION_EVENTS_QUEUE = "nutriprogress.events.evaluation";
+    public static final String EVALUATION_EVENTS_DLQ   = "nutriprogress.events.evaluation.dlq";
+
+    @Bean
     public Queue evaluationEventsQueue() {
         return QueueBuilder.durable(EVALUATION_EVENTS_QUEUE)
-                .withArgument("x-dead-letter-exchange", DLX_EXCHANGE)
+                .withArgument("x-dead-letter-exchange",    DLX_EXCHANGE)
                 .withArgument("x-dead-letter-routing-key", "evaluation.events.dead")
                 .build();
     }
 
+    @Bean
+    public Queue evaluationEventsDLQ() {
+        return QueueBuilder.durable(EVALUATION_EVENTS_DLQ).build();
+    }
+
     // ========================================================================
-    // BINDINGS
+    // BINDINGS — MAIN QUEUES → EVENTS EXCHANGE
     // ========================================================================
 
     @Bean
@@ -113,9 +141,28 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(evaluationEventsQueue).to(eventsExchange).with("evaluation.#");
     }
 
+    // ========================================================================
+    // BINDINGS — DLQ → DLX EXCHANGE
+    // ========================================================================
+
     @Bean
     public Binding notificationDlqBinding(Queue notificationDeadLetterQueue, DirectExchange deadLetterExchange) {
         return BindingBuilder.bind(notificationDeadLetterQueue).to(deadLetterExchange).with("notification.dead");
+    }
+
+    @Bean
+    public Binding userEventsDlqBinding(Queue userEventsDLQ, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(userEventsDLQ).to(deadLetterExchange).with("user.events.dead");
+    }
+
+    @Bean
+    public Binding patientEventsDlqBinding(Queue patientEventsDLQ, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(patientEventsDLQ).to(deadLetterExchange).with("patient.events.dead");
+    }
+
+    @Bean
+    public Binding evaluationEventsDlqBinding(Queue evaluationEventsDLQ, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(evaluationEventsDLQ).to(deadLetterExchange).with("evaluation.events.dead");
     }
 
     // ========================================================================
