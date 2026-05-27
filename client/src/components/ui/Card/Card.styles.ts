@@ -10,21 +10,21 @@ interface CardContainerProps {
 
 const variantStyles = {
   default: css`
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
+    background-color: ${({ theme }) => theme.colors.surface};
+    border: 1px solid ${({ theme }) => theme.colors.border};
     box-shadow: none;
   `,
-  
+
   outlined: css`
-    background-color: #ffffff;
-    border: 2px solid #10b981;
+    background-color: ${({ theme }) => theme.colors.surface};
+    border: 2px solid ${({ theme }) => theme.colors.primary[500]};
     box-shadow: none;
   `,
-  
+
   elevated: css`
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    background-color: ${({ theme }) => theme.colors.surface};
+    border: 1px solid ${({ theme }) => theme.colors.border};
+    box-shadow: ${({ theme }) => theme.shadows.md};
   `,
 };
 
@@ -32,23 +32,23 @@ const paddingStyles = {
   none: css`
     padding: 0;
   `,
-  
+
   small: css`
     padding: 0.75rem;
   `,
-  
+
   medium: css`
     padding: 1.25rem;
   `,
-  
+
   large: css`
     padding: 1.75rem;
   `,
 };
 
 export const CardContainer = styled.div<CardContainerProps>`
-  border-radius: 0.75rem;
-  transition: all 0.2s ease-in-out;
+  border-radius: ${({ theme }) => theme.radii.xl};
+  transition: all ${({ theme }) => theme.transitions.normal};
   
   ${({ variant }) => variantStyles[variant]}
   ${({ padding }) => paddingStyles[padding]}
@@ -62,17 +62,17 @@ export const CardContainer = styled.div<CardContainerProps>`
     user-select: none;
 
     &:hover {
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      box-shadow: ${({ theme }) => theme.shadows.lg};
       transform: translateY(-2px);
     }
 
     &:active {
       transform: translateY(0);
-      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+      box-shadow: ${({ theme }) => theme.shadows.md};
     }
 
     &:focus-visible {
-      outline: 2px solid #10b981;
+      outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
       outline-offset: 2px;
     }
   `}
@@ -81,8 +81,8 @@ export const CardContainer = styled.div<CardContainerProps>`
 export const CardHeader = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 export const CardBody = styled.div`
@@ -96,22 +96,22 @@ export const CardFooter = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
+  margin-top: ${({ theme }) => theme.spacing.md};
+  padding-top: ${({ theme }) => theme.spacing.md};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
 export const CardTitle = styled.h3`
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0;
-  line-height: 1.4;
+  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
 `;
 
 export const CardDescription = styled.p`
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin: 0;
-  line-height: 1.5;
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
 `;

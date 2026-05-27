@@ -62,7 +62,7 @@ export const LoadingContainer = styled.div<LoadingContainerProps>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
+  gap: ${({ theme }) => theme.spacing.md};
   
   ${({ fullScreen }) => fullScreen && css`
     height: 100%;
@@ -74,12 +74,12 @@ const sizeStyles = {
     width: 1.5rem;
     height: 1.5rem;
   `,
-  
+
   medium: css`
     width: 2.5rem;
     height: 2.5rem;
   `,
-  
+
   large: css`
     width: 4rem;
     height: 4rem;
@@ -174,9 +174,9 @@ export const LoadingSpinner = styled.div<LoadingSpinnerProps>`
 `;
 
 export const LoadingText = styled.span`
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #6b7280;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.text.secondary};
   text-align: center;
 `;
 
@@ -190,6 +190,6 @@ export const LoadingOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9998;
+  z-index: ${({ theme }) => theme.zIndex.overlay};
   backdrop-filter: blur(2px);
 `;

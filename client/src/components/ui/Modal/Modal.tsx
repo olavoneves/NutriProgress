@@ -8,7 +8,7 @@ import {
   ModalFooter,
   ModalTitle,
   ModalCloseButton,
-} from './Modal.styles.ts';
+} from './Modal.styles';
 
 export type ModalSize = 'small' | 'medium' | 'large' | 'full';
 

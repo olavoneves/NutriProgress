@@ -35,8 +35,8 @@ export const ModalOverlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
+  z-index: ${({ theme }) => theme.zIndex.modal};
+  padding: ${({ theme }) => theme.spacing.md};
   animation: ${fadeIn} 0.2s ease-out;
   overflow-y: auto;
 `;
@@ -45,15 +45,15 @@ const sizeStyles = {
   small: css`
     max-width: 400px;
   `,
-  
+
   medium: css`
     max-width: 600px;
   `,
-  
+
   large: css`
     max-width: 900px;
   `,
-  
+
   full: css`
     max-width: 95vw;
     max-height: 95vh;
@@ -61,9 +61,9 @@ const sizeStyles = {
 };
 
 export const ModalContainer = styled.div<ModalContainerProps>`
-  background-color: #ffffff;
-  border-radius: 0.75rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.radii.xl};
+  box-shadow: ${({ theme }) => theme.shadows['2xl']};
   width: 100%;
   max-height: 90vh;
   display: flex;
@@ -72,9 +72,9 @@ export const ModalContainer = styled.div<ModalContainerProps>`
   
   ${({ size }) => sizeStyles[size]}
 
-  @media (max-width: 640px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     max-height: 95vh;
-    border-radius: 0.5rem;
+    border-radius: ${({ theme }) => theme.radii.lg};
   }
 `;
 
@@ -82,17 +82,17 @@ export const ModalHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 1.25rem ${({ theme }) => theme.spacing.lg};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
   flex-shrink: 0;
 `;
 
 export const ModalTitle = styled.h2`
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #111827;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0;
-  line-height: 1.4;
+  line-height: ${({ theme }) => theme.typography.lineHeight.normal};
 `;
 
 export const ModalCloseButton = styled.button`
@@ -103,23 +103,23 @@ export const ModalCloseButton = styled.button`
   height: 2rem;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: ${({ theme }) => theme.colors.gray[500]};
   cursor: pointer;
-  border-radius: 0.375rem;
-  transition: all 0.2s ease-in-out;
+  border-radius: ${({ theme }) => theme.radii.md};
+  transition: all ${({ theme }) => theme.transitions.normal};
   flex-shrink: 0;
 
   &:hover {
-    background-color: #f3f4f6;
-    color: #111827;
+    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 
   &:active {
-    background-color: #e5e7eb;
+    background-color: ${({ theme }) => theme.colors.gray[200]};
   }
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: 2px;
   }
 
@@ -130,7 +130,7 @@ export const ModalCloseButton = styled.button`
 `;
 
 export const ModalBody = styled.div`
-  padding: 1.5rem;
+  padding: ${({ theme }) => theme.spacing.lg};
   overflow-y: auto;
   flex: 1;
 
@@ -140,21 +140,21 @@ export const ModalBody = styled.div`
   }
 
   &::-webkit-scrollbar-track {
-    background: #f3f4f6;
+    background: ${({ theme }) => theme.colors.gray[100]};
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: ${({ theme }) => theme.colors.gray[300]};
     border-radius: 4px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+    background: ${({ theme }) => theme.colors.gray[400]};
   }
 
-  @media (max-width: 640px) {
-    padding: 1rem;
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: ${({ theme }) => theme.spacing.md};
   }
 `;
 
@@ -163,13 +163,13 @@ export const ModalFooter = styled.div`
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  padding: 1.25rem ${({ theme }) => theme.spacing.lg};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
   flex-shrink: 0;
 
-  @media (max-width: 640px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     flex-direction: column-reverse;
-    gap: 0.5rem;
+    gap: ${({ theme }) => theme.spacing.sm};
 
     button {
       width: 100%;

@@ -18,100 +18,100 @@ const spin = keyframes`
 
 const variantStyles = {
   primary: css`
-    background-color: #10b981;
-    color: #ffffff;
-    border: 2px solid #10b981;
+    background-color: ${({ theme }) => theme.colors.primary[500]};
+    color: ${({ theme }) => theme.colors.white};
+    border: 2px solid ${({ theme }) => theme.colors.primary[500]};
 
     &:hover:not(:disabled) {
-      background-color: #059669;
-      border-color: #059669;
+      background-color: ${({ theme }) => theme.colors.primary[600]};
+      border-color: ${({ theme }) => theme.colors.primary[600]};
     }
 
     &:active:not(:disabled) {
-      background-color: #047857;
-      border-color: #047857;
+      background-color: ${({ theme }) => theme.colors.primary[700]};
+      border-color: ${({ theme }) => theme.colors.primary[700]};
     }
   `,
-  
+
   secondary: css`
-    background-color: #6b7280;
-    color: #ffffff;
-    border: 2px solid #6b7280;
+    background-color: ${({ theme }) => theme.colors.gray[500]};
+    color: ${({ theme }) => theme.colors.white};
+    border: 2px solid ${({ theme }) => theme.colors.gray[500]};
 
     &:hover:not(:disabled) {
-      background-color: #4b5563;
-      border-color: #4b5563;
+      background-color: ${({ theme }) => theme.colors.gray[600]};
+      border-color: ${({ theme }) => theme.colors.gray[600]};
     }
 
     &:active:not(:disabled) {
-      background-color: #374151;
-      border-color: #374151;
+      background-color: ${({ theme }) => theme.colors.gray[700]};
+      border-color: ${({ theme }) => theme.colors.gray[700]};
     }
   `,
-  
+
   outline: css`
     background-color: transparent;
-    color: #10b981;
-    border: 2px solid #10b981;
+    color: ${({ theme }) => theme.colors.primary[500]};
+    border: 2px solid ${({ theme }) => theme.colors.primary[500]};
 
     &:hover:not(:disabled) {
-      background-color: #f0fdf4;
+      background-color: ${({ theme }) => theme.colors.primary[50]};
     }
 
     &:active:not(:disabled) {
-      background-color: #dcfce7;
+      background-color: ${({ theme }) => theme.colors.primary[100]};
     }
   `,
-  
+
   danger: css`
-    background-color: #ef4444;
-    color: #ffffff;
-    border: 2px solid #ef4444;
+    background-color: ${({ theme }) => theme.colors.danger[500]};
+    color: ${({ theme }) => theme.colors.white};
+    border: 2px solid ${({ theme }) => theme.colors.danger[500]};
 
     &:hover:not(:disabled) {
-      background-color: #dc2626;
-      border-color: #dc2626;
+      background-color: ${({ theme }) => theme.colors.danger[600]};
+      border-color: ${({ theme }) => theme.colors.danger[600]};
     }
 
     &:active:not(:disabled) {
-      background-color: #b91c1c;
-      border-color: #b91c1c;
+      background-color: ${({ theme }) => theme.colors.danger[700]};
+      border-color: ${({ theme }) => theme.colors.danger[700]};
     }
   `,
-  
+
   success: css`
-    background-color: #22c55e;
-    color: #ffffff;
-    border: 2px solid #22c55e;
+    background-color: ${({ theme }) => theme.colors.success[500]};
+    color: ${({ theme }) => theme.colors.white};
+    border: 2px solid ${({ theme }) => theme.colors.success[500]};
 
     &:hover:not(:disabled) {
-      background-color: #16a34a;
-      border-color: #16a34a;
+      background-color: ${({ theme }) => theme.colors.success[600]};
+      border-color: ${({ theme }) => theme.colors.success[600]};
     }
 
     &:active:not(:disabled) {
-      background-color: #15803d;
-      border-color: #15803d;
+      background-color: ${({ theme }) => theme.colors.success[700]};
+      border-color: ${({ theme }) => theme.colors.success[700]};
     }
   `,
 };
 
 const sizeStyles = {
   small: css`
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+    padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+    font-size: ${({ theme }) => theme.typography.fontSize.sm};
     gap: 0.375rem;
   `,
-  
+
   medium: css`
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    gap: 0.5rem;
+    padding: 0.75rem ${({ theme }) => theme.spacing.lg};
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+    gap: ${({ theme }) => theme.spacing.sm};
   `,
-  
+
   large: css`
-    padding: 1rem 2rem;
-    font-size: 1.125rem;
+    padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.xl};
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
     gap: 0.625rem;
   `,
 };
@@ -120,10 +120,10 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  border-radius: 0.5rem;
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  border-radius: ${({ theme }) => theme.radii.lg};
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all ${({ theme }) => theme.transitions.normal};
   font-family: inherit;
   outline: none;
   position: relative;
@@ -140,7 +140,7 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
   }
 
   &:focus-visible {
-    outline: 2px solid #10b981;
+    outline: 2px solid ${({ theme }) => theme.colors.primary[500]};
     outline-offset: 2px;
   }
 
@@ -158,9 +158,9 @@ export const ButtonContainer = styled.button<ButtonContainerProps>`
     width: 1rem;
     height: 1rem;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #ffffff;
-    border-radius: 50%;
+    border-top-color: ${({ theme }) => theme.colors.white};
+    border-radius: ${({ theme }) => theme.radii.full};
     animation: ${spin} 0.6s linear infinite;
-    margin-right: 0.5rem;
+    margin-right: ${({ theme }) => theme.spacing.sm};
   }
 `;

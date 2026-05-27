@@ -13,7 +13,7 @@ export const LayoutContainer = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f9fafb;
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 export const LayoutWrapper = styled.div`
@@ -27,10 +27,10 @@ export const ContentArea = styled.main<ContentAreaProps>`
   overflow-y: auto;
   overflow-x: hidden;
   
-  ${({ hideHeader }) => hideHeader ? css`
+  ${({ hideHeader, theme }) => hideHeader ? css`
     height: 100vh;
   ` : css`
-    height: calc(100vh - 4rem); /* 4rem = altura do header */
+    height: calc(100vh - ${theme.layout.headerHeight});
   `}
 
   /* Estilização da scrollbar */
@@ -39,16 +39,16 @@ export const ContentArea = styled.main<ContentAreaProps>`
   }
 
   &::-webkit-scrollbar-track {
-    background: #f3f4f6;
+    background: ${({ theme }) => theme.colors.gray[100]};
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: ${({ theme }) => theme.colors.gray[300]};
     border-radius: 5px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+    background: ${({ theme }) => theme.colors.gray[400]};
   }
 `;
 
@@ -57,15 +57,15 @@ export const ContentContainer = styled.div<ContentContainerProps>`
   max-width: ${({ maxWidth }) => maxWidth};
   margin: 0 auto;
   
-  ${({ contentPadding }) => contentPadding && css`
-    padding: 2rem 1.5rem;
+  ${({ contentPadding, theme }) => contentPadding && css`
+    padding: ${theme.spacing.xl} ${theme.spacing.lg};
 
-    @media (max-width: 768px) {
-      padding: 1.5rem 1rem;
+    @media (max-width: ${theme.breakpoints.md}) {
+      padding: ${theme.spacing.lg} ${theme.spacing.md};
     }
 
-    @media (max-width: 480px) {
-      padding: 1rem 0.75rem;
+    @media (max-width: ${theme.breakpoints.sm}) {
+      padding: ${theme.spacing.md} 0.75rem;
     }
   `}
 `;
