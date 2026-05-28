@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,6 +15,8 @@ import java.util.UUID;
 public interface PatientRepository extends JpaRepository<Patient, UUID>, JpaSpecificationExecutor<Patient> {
 
     Optional<Patient> findByIdAndNutritionistId(UUID id, UUID nutritionistId);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
     Page<Patient> findByNutritionistId(UUID nutritionistId, Pageable pageable);
 
