@@ -55,7 +55,9 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/nutriprogress_analytics}
-      auto-index-creation: true
+      # false (default): a app sobe sem exigir Mongo no boot. Index creation
+      # eager (true) conecta no refresh do contexto e quebraria startup/CI sem Mongo.
+      auto-index-creation: false
 
   task:
     execution:
