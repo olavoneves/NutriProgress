@@ -9,7 +9,10 @@ import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.nutriprogress.modules.analytics.repository")
+@EnableMongoRepositories(basePackages = {
+        "com.nutriprogress.modules.analytics.repository",
+        "com.nutriprogress.modules.audit.repository"
+})
 public class MongoConfig {
 
     /**
