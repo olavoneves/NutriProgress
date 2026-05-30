@@ -58,6 +58,8 @@ spring:
       # false (default): a app sobe sem exigir Mongo no boot. Index creation
       # eager (true) conecta no refresh do contexto e quebraria startup/CI sem Mongo.
       auto-index-creation: false
+      # STANDARD (RFC 4122, BSON binary subtype 4) — necessario para campos UUID nos documents.
+      uuid-representation: standard
 
   task:
     execution:
