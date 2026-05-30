@@ -2,6 +2,8 @@ package com.nutriprogress.config;
 
 import com.nutriprogress.modules.auth.security.JwtAuthenticationEntryPoint;
 import com.nutriprogress.modules.auth.security.JwtAuthenticationFilter;
+import com.nutriprogress.security.RateLimitingFilter;
+import com.nutriprogress.security.SecurityAuditFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +37,8 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final JwtAuthenticationEntryPoint jwtAuthEntryPoint;
     private final UserDetailsService userDetailsService;
+    private final RateLimitingFilter rateLimitingFilter;
+    private final SecurityAuditFilter securityAuditFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -60,6 +64,8 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class)
+                .addFilterAfter(securityAuditFilter, RateLimitingFilter.class)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint));
 
         return http.build();
