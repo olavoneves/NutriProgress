@@ -48,6 +48,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**",
+                                "/health",
+                                "/health/ping",
                                 "/billing/webhook/stripe",
                                 "/actuator/health",
                                 "/actuator/health/**",
