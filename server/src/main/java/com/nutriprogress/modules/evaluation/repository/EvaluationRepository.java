@@ -27,6 +27,8 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, UUID> {
 
     long countByNutritionistIdAndCreatedAtAfter(UUID nutritionistId, LocalDateTime date);
 
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
     @Query("SELECT e FROM Evaluation e WHERE e.id = :id AND e.nutritionist.id = :nutritionistId")
     Optional<Evaluation> findByIdAndNutritionistId(UUID id, UUID nutritionistId);
 

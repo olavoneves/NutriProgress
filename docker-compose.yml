@@ -1,35 +1,177 @@
+name: nutriprogress-dev
+
 services:
-  db:
-    image: postgres:16
-    container_name: nutriprogress-db
+
+  # ============================================================
+  # POSTGRESQL
+  # ============================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: nutriprogress-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nutriprogress_dev
+      POSTGRES_USER: nutriprogress
+      POSTGRES_PASSWORD: nutriprogress123
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U nutriprogress -d nutriprogress_dev"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - nutriprogress-network
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: nutriprogress-rabbitmq
+  # ============================================================
+  # MONGODB
+  # ============================================================
+  mongodb:
+    image: mongo:7-jammy
+    container_name: nutriprogress-mongodb
+    restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      MONGO_INITDB_ROOT_USERNAME: nutriprogress
+      MONGO_INITDB_ROOT_PASSWORD: nutriprogress123
+      MONGO_INITDB_DATABASE: nutriprogress_analytics
     ports:
-      - "${RABBITMQ_PORT:-5672}:5672"
-      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - nutriprogress-network
 
+  # ============================================================
+  # RABBITMQ
+  # ============================================================
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: nutriprogress-rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: nutriprogress
+      RABBITMQ_DEFAULT_PASS: nutriprogress123
+      RABBITMQ_DEFAULT_VHOST: nutriprogress
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+    networks:
+      - nutriprogress-network
+
+  # ============================================================
+  # REDIS
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: nutriprogress-redis
+    restart: unless-stopped
+    command: redis-server --requirepass nutriprogress123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--pass", "nutriprogress123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nutriprogress-network
+
+  # ============================================================
+  # MAILHOG (dev email testing)
+  # ============================================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: nutriprogress-mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - nutriprogress-network
+
+  # ============================================================
+  # API (Spring Boot)
+  # ============================================================
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    container_name: nutriprogress-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/nutriprogress_dev
+      DB_USERNAME: nutriprogress
+      DB_PASSWORD: nutriprogress123
+      MONGODB_URI: mongodb://nutriprogress:nutriprogress123@mongodb:27017/nutriprogress_analytics?authSource=admin
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: nutriprogress
+      RABBITMQ_PASS: nutriprogress123
+      JWT_SECRET: dev-secret-key-change-in-production-min-512-bits-placeholder
+      JWT_EXPIRATION: 900000
+      JWT_REFRESH_EXPIRATION: 604800000
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-placeholder}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-placeholder}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_placeholder}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_placeholder}
+      STRIPE_PRICE_STARTER: ${STRIPE_PRICE_STARTER:-price_placeholder}
+      STRIPE_PRICE_PRO: ${STRIPE_PRICE_PRO:-price_placeholder}
+      STRIPE_PRICE_PREMIUM: ${STRIPE_PRICE_PREMIUM:-price_placeholder}
+      MAIL_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_FROM: dev@nutriprogress.com
+      APP_URL: http://localhost:3000
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    volumes:
+      - ./server/src:/app/src
+      - ./server/logs:/app/logs
+    networks:
+      - nutriprogress-network
+
+# ============================================================
+# VOLUMES
+# ============================================================
 volumes:
-  pgdata:
+  postgres_data:
+    name: nutriprogress_postgres_data
+  mongodb_data:
+    name: nutriprogress_mongodb_data
+  rabbitmq_data:
+    name: nutriprogress_rabbitmq_data
+  redis_data:
+    name: nutriprogress_redis_data
+
+# ============================================================
+# NETWORK
+# ============================================================
+networks:
+  nutriprogress-network:
+    name: nutriprogress-network
+    driver: bridge

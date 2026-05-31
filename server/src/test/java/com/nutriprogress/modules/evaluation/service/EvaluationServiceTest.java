@@ -15,7 +15,9 @@ import com.nutriprogress.modules.patient.exception.PatientNotFoundException;
 import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
 import com.nutriprogress.modules.patient.repository.PatientRepository;
 import com.nutriprogress.shared.event.EventPublisher;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,6 +56,9 @@ class EvaluationServiceTest {
     @Mock
     private EventPublisher eventPublisher;
 
+    @Mock
+    private EntityManager entityManager;
+
     @InjectMocks
     private EvaluationService evaluationService;
 
@@ -87,6 +92,9 @@ class EvaluationServiceTest {
         evaluation.setWeight(BigDecimal.valueOf(70.0));
         evaluation.setHeight(BigDecimal.valueOf(165.0));
         evaluation.setBmi(BigDecimal.valueOf(25.71));
+
+        // @PersistenceContext impede que o Mockito injete via construtor; injetar manualmente
+        ReflectionTestUtils.setField(evaluationService, "entityManager", entityManager);
     }
 
     @Test

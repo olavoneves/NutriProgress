@@ -118,6 +118,52 @@ public class RabbitMQConfig {
     }
 
     // ========================================================================
+    // QUEUES + DLQ — ANALYTICS (consumidor independente das notificacoes)
+    // ========================================================================
+    // Filas dedicadas para analytics. Como o exchange de eventos e topic, cada
+    // fila ligada a mesma routing key recebe sua propria copia da mensagem — por
+    // isso analytics NAO pode reaproveitar as filas de notificacao (consumidores
+    // concorrentes dividiriam as mensagens entre os modulos).
+
+    public static final String ANALYTICS_USER_QUEUE         = "nutriprogress.analytics.user";
+    public static final String ANALYTICS_PATIENT_QUEUE      = "nutriprogress.analytics.patient";
+    public static final String ANALYTICS_EVALUATION_QUEUE   = "nutriprogress.analytics.evaluation";
+    public static final String ANALYTICS_SUBSCRIPTION_QUEUE = "nutriprogress.analytics.subscription";
+    public static final String ANALYTICS_DLQ                = "nutriprogress.analytics.dlq";
+
+    private Queue analyticsQueue(String name) {
+        return QueueBuilder.durable(name)
+                .withArgument("x-dead-letter-exchange",    DLX_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", "analytics.dead")
+                .build();
+    }
+
+    @Bean
+    public Queue analyticsUserQueue() {
+        return analyticsQueue(ANALYTICS_USER_QUEUE);
+    }
+
+    @Bean
+    public Queue analyticsPatientQueue() {
+        return analyticsQueue(ANALYTICS_PATIENT_QUEUE);
+    }
+
+    @Bean
+    public Queue analyticsEvaluationQueue() {
+        return analyticsQueue(ANALYTICS_EVALUATION_QUEUE);
+    }
+
+    @Bean
+    public Queue analyticsSubscriptionQueue() {
+        return analyticsQueue(ANALYTICS_SUBSCRIPTION_QUEUE);
+    }
+
+    @Bean
+    public Queue analyticsDeadLetterQueue() {
+        return QueueBuilder.durable(ANALYTICS_DLQ).build();
+    }
+
+    // ========================================================================
     // BINDINGS — MAIN QUEUES → EVENTS EXCHANGE
     // ========================================================================
 
@@ -142,8 +188,37 @@ public class RabbitMQConfig {
     }
 
     // ========================================================================
+    // BINDINGS — ANALYTICS QUEUES → EVENTS EXCHANGE
+    // ========================================================================
+
+    @Bean
+    public Binding analyticsUserBinding(Queue analyticsUserQueue, TopicExchange eventsExchange) {
+        return BindingBuilder.bind(analyticsUserQueue).to(eventsExchange).with("user.#");
+    }
+
+    @Bean
+    public Binding analyticsPatientBinding(Queue analyticsPatientQueue, TopicExchange eventsExchange) {
+        return BindingBuilder.bind(analyticsPatientQueue).to(eventsExchange).with("patient.#");
+    }
+
+    @Bean
+    public Binding analyticsEvaluationBinding(Queue analyticsEvaluationQueue, TopicExchange eventsExchange) {
+        return BindingBuilder.bind(analyticsEvaluationQueue).to(eventsExchange).with("evaluation.#");
+    }
+
+    @Bean
+    public Binding analyticsSubscriptionBinding(Queue analyticsSubscriptionQueue, TopicExchange eventsExchange) {
+        return BindingBuilder.bind(analyticsSubscriptionQueue).to(eventsExchange).with("subscription.#");
+    }
+
+    // ========================================================================
     // BINDINGS — DLQ → DLX EXCHANGE
     // ========================================================================
+
+    @Bean
+    public Binding analyticsDlqBinding(Queue analyticsDeadLetterQueue, DirectExchange deadLetterExchange) {
+        return BindingBuilder.bind(analyticsDeadLetterQueue).to(deadLetterExchange).with("analytics.dead");
+    }
 
     @Bean
     public Binding notificationDlqBinding(Queue notificationDeadLetterQueue, DirectExchange deadLetterExchange) {
