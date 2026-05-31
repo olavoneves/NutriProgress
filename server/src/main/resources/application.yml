@@ -52,6 +52,23 @@ spring:
     encoding: UTF-8
     cache: false
 
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/nutriprogress_analytics}
+      # false (default): a app sobe sem exigir Mongo no boot. Index creation
+      # eager (true) conecta no refresh do contexto e quebraria startup/CI sem Mongo.
+      auto-index-creation: false
+      # STANDARD (RFC 4122, BSON binary subtype 4) — necessario para campos UUID nos documents.
+      uuid-representation: standard
+
+  task:
+    execution:
+      pool:
+        core-size: 4
+        max-size: 10
+        queue-capacity: 200
+      thread-name-prefix: async-
+
 server:
   port: ${PORT:8080}
   compression:
@@ -88,3 +105,28 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, prometheus, metrics, loggers
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active:dev}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+info:
+  app:
+    name: NutriProgress API
+    version: "@project.version@"
+    description: SaaS para acompanhamento nutricional

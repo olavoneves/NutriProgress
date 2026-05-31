@@ -18,6 +18,8 @@ import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessExce
 import com.nutriprogress.modules.patient.repository.PatientRepository;
 import com.nutriprogress.shared.event.EventPublisher;
 import com.nutriprogress.shared.event.events.EvaluationCreatedEvent;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,12 @@ import java.util.UUID;
 public class EvaluationService {
 
     private final EvaluationRepository evaluationRepository;
+
+    // @PersistenceContext: injetado pelo Spring (nao entra no construtor do @RequiredArgsConstructor)
+    // Necessario para refresh apos INSERT, pois o trigger set_evaluation_number() e executado no banco
+    // e o Hibernate nao ve o valor automaticamente sem um SELECT explicito pos-INSERT.
+    @PersistenceContext
+    private EntityManager entityManager;
     private final PatientRepository patientRepository;
     private final NutritionistRepository nutritionistRepository;
     private final EvaluationMapper mapper;
@@ -72,6 +80,10 @@ public class EvaluationService {
         evaluation.setNotes(request.getNotes());
 
         evaluation = evaluationRepository.save(evaluation);
+        // Flush envia o INSERT ao banco (acionando o trigger set_evaluation_number()).
+        // Refresh le de volta os valores gerados pelo trigger que o Hibernate nao vê em cache.
+        entityManager.flush();
+        entityManager.refresh(evaluation);
         log.info("Avaliacao criada com sucesso: {} (Numero: {})", evaluation.getId(), evaluation.getEvaluationNumber());
 
         eventPublisher.publish(EvaluationCreatedEvent.builder()

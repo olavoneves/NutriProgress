@@ -23,10 +23,44 @@ spring:
       simple:
         auto-startup: false
 
+  data:
+    mongodb:
+      auto-index-creation: false
+      uuid-representation: standard
+
+  mail:
+    host: localhost
+    port: 25
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
 jwt:
   secret: ${JWT_SECRET:test-only-secret-key-at-least-64-characters-long-do-not-use-in-production-xxxxx}
+  expiration: 900000
+  refresh-expiration: 604800000
+
+stripe:
+  secret-key: sk_test_mock_key_not_real
+  webhook-secret: whsec_mock_not_real
+  price:
+    starter: price_test_starter
+    pro: price_test_pro
+    premium: price_test_premium
+
+google:
+  oauth:
+    client-id: mock-google-client-id-for-tests
+
+app:
+  rate-limiting:
+    enabled: false
 
 logging:
   level:
     com.nutriprogress: WARN
     org.hibernate.SQL: WARN
+    org.testcontainers: WARN

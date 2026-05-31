@@ -1,10 +1,12 @@
 package com.nutriprogress.modules.nutritionist.repository;
 
 import com.nutriprogress.modules.nutritionist.entity.Nutritionist;
+import com.nutriprogress.modules.nutritionist.entity.SubscriptionPlan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,4 +17,8 @@ public interface NutritionistRepository extends JpaRepository<Nutritionist, UUID
 
     @Query("SELECT n FROM Nutritionist n WHERE LOWER(n.user.email) = LOWER(:email)")
     Optional<Nutritionist> findByUserEmail(String email);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    long countBySubscriptionPlan(SubscriptionPlan plan);
 }

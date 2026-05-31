@@ -10,6 +10,12 @@ spring:
     hibernate:
       ddl-auto: validate
 
+management:
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+
 logging:
   level:
     com.nutriprogress: DEBUG

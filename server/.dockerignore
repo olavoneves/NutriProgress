@@ -1,0 +1,15 @@
+.git
+.gitignore
+.github
+*.md
+target/
+logs/
+.mvn/wrapper/maven-wrapper.jar
+Dockerfile.dev
+.env
+.env.*
+scripts/seed.sh
+**/.DS_Store
+**/*.log
+**/test-output/
+**/surefire-reports/
