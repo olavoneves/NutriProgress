@@ -60,6 +60,12 @@
       ],
       "@assets/*": [
         "./src/assets/*"
+      ],
+      "@styles/*": [
+        "./src/styles/*"
+      ],
+      "@routes/*": [
+        "./src/routes/*"
       ]
     }
   },
