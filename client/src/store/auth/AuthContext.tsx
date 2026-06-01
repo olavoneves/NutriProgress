@@ -1,96 +1,209 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import type { ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useCallback,
+  useEffect,
+} from 'react';
 import type { AuthUser, AuthTokens, LoginCredentials } from '../../@types';
-import { getStoredTokens, clearStoredTokens } from '@lib/api';
+import { api, API_ENDPOINTS } from '@lib/api';
+import { getStoredTokens, setStoredTokens, clearStoredTokens } from '@lib/api';
 
-interface AuthContextData {
-    user: AuthUser | null;
-    tokens: AuthTokens | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
-    login: (credentials: LoginCredentials) => Promise<void>;
-    logout: () => void;
-    updateUser: (user: AuthUser) => void;
+interface AuthState {
+  user:            AuthUser | null;
+  isAuthenticated: boolean;
+  isLoading:       boolean;
+  error:           string | null;
 }
 
-const AuthContext = createContext<AuthContextData | null>(null);
+type AuthAction =
+  | { type: 'AUTH_START' }
+  | { type: 'AUTH_SUCCESS'; payload: AuthUser }
+  | { type: 'AUTH_FAILURE'; payload: string }
+  | { type: 'AUTH_LOGOUT' }
+  | { type: 'CLEAR_ERROR' };
 
-interface AuthProviderProps {
-    children: ReactNode;
+const initialState: AuthState = {
+  user:            null,
+  isAuthenticated: false,
+  isLoading:       true,
+  error:           null,
+};
+
+function authReducer(state: AuthState, action: AuthAction): AuthState {
+  switch (action.type) {
+    case 'AUTH_START':
+      return { ...state, isLoading: true, error: null };
+    case 'AUTH_SUCCESS':
+      return {
+        ...state,
+        user:            action.payload,
+        isAuthenticated: true,
+        isLoading:       false,
+        error:           null,
+      };
+    case 'AUTH_FAILURE':
+      return {
+        ...state,
+        user:            null,
+        isAuthenticated: false,
+        isLoading:       false,
+        error:           action.payload,
+      };
+    case 'AUTH_LOGOUT':
+      return { ...initialState, isLoading: false };
+    case 'CLEAR_ERROR':
+      return { ...state, error: null };
+    default:
+      return state;
+  }
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<AuthUser | null>(null);
-    const [tokens, setTokens] = useState<AuthTokens | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+interface AuthContextValue extends AuthState {
+  login:       (credentials: LoginCredentials) => Promise<void>;
+  loginGoogle: (idToken: string) => Promise<void>;
+  logout:      () => void;
+  clearError:  () => void;
+}
 
-    // Carrega tokens do storage na inicialização
-    useEffect(() => {
-        const storedTokens = getStoredTokens();
-        if (storedTokens) {
-            setTokens(storedTokens);
-            // TODO: Buscar dados do usuário com o token (/nutritionists/me)
-        }
-        setIsLoading(false);
-    }, []);
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-    const login = useCallback(async (_credentials: LoginCredentials) => {
-        setIsLoading(true);
-        try {
-            // TODO: Chamar authService.login(credentials)
-            // const response = await authService.login(credentials);
-            // setTokens(response.tokens);
-            // setUser(response.user);
-            // setStoredTokens(response.tokens);
-            throw new Error('Login não implementado ainda');
-        } catch (error) {
-            clearStoredTokens();
-            setUser(null);
-            setTokens(null);
-            throw error;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+interface LoginApiResponse {
+  data: {
+    accessToken:  string;
+    refreshToken: string;
+    expiresIn:    number;
+    user: {
+      id:               string;
+      email:            string;
+      fullName:         string;
+      role:             string;
+      nutritionistId?:  string;
+    };
+  };
+}
 
-    const logout = useCallback(() => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  useEffect(() => {
+    const tokens = getStoredTokens();
+    if (!tokens?.accessToken) {
+      dispatch({ type: 'AUTH_LOGOUT' });
+      return;
+    }
+
+    api
+      .get<{ data: { id: string; email: string; fullName: string; role: string } }>(
+        API_ENDPOINTS.NUTRITIONISTS.ME
+      )
+      .then((res) => {
+        dispatch({
+          type: 'AUTH_SUCCESS',
+          payload: {
+            id:    res.data.data.id,
+            email: res.data.data.email,
+            name:  res.data.data.fullName,
+            role:  res.data.data.role,
+          },
+        });
+      })
+      .catch(() => {
         clearStoredTokens();
-        setUser(null);
-        setTokens(null);
-        // TODO: Chamar authService.logout() (invalidar refresh token no backend)
-    }, []);
+        dispatch({ type: 'AUTH_LOGOUT' });
+      });
+  }, []);
 
-    const updateUser = useCallback((updatedUser: AuthUser) => {
-        setUser(updatedUser);
-    }, []);
+  const handleAuthSuccess = useCallback(
+    (response: LoginApiResponse['data']) => {
+      const tokens: AuthTokens = {
+        accessToken:  response.accessToken,
+        refreshToken: response.refreshToken,
+        expiresIn:    response.expiresIn,
+      };
+      setStoredTokens(tokens);
 
-    return (
-        <AuthContext.Provider
-            value={{
-                user,
-                tokens,
-                isAuthenticated: !!tokens?.accessToken,
-                isLoading,
-                login,
-                logout,
-                updateUser,
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
-    );
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: {
+          id:    response.user.id,
+          email: response.user.email,
+          name:  response.user.fullName,
+          role:  response.user.role,
+        },
+      });
+    },
+    []
+  );
+
+  const login = useCallback(
+    async (credentials: LoginCredentials) => {
+      dispatch({ type: 'AUTH_START' });
+      try {
+        const response = await api.post<LoginApiResponse>(
+          API_ENDPOINTS.AUTH.LOGIN,
+          credentials
+        );
+        handleAuthSuccess(response.data.data);
+      } catch (error: unknown) {
+        const message =
+          (error as { message?: string }).message || 'Erro ao fazer login';
+        dispatch({ type: 'AUTH_FAILURE', payload: message });
+        throw error;
+      }
+    },
+    [handleAuthSuccess]
+  );
+
+  const loginGoogle = useCallback(
+    async (idToken: string) => {
+      dispatch({ type: 'AUTH_START' });
+      try {
+        const response = await api.post<LoginApiResponse>(
+          API_ENDPOINTS.AUTH.GOOGLE,
+          { idToken }
+        );
+        handleAuthSuccess(response.data.data);
+      } catch (error: unknown) {
+        const message =
+          (error as { message?: string }).message ||
+          'Erro ao fazer login com Google';
+        dispatch({ type: 'AUTH_FAILURE', payload: message });
+        throw error;
+      }
+    },
+    [handleAuthSuccess]
+  );
+
+  const logout = useCallback(() => {
+    clearStoredTokens();
+    dispatch({ type: 'AUTH_LOGOUT' });
+  }, []);
+
+  const clearError = useCallback(
+    () => dispatch({ type: 'CLEAR_ERROR' }),
+    []
+  );
+
+  return (
+    <AuthContext.Provider
+      value={{ ...state, login, loginGoogle, logout, clearError }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 AuthProvider.displayName = 'AuthProvider';
 
-/**
- * Hook para acessar o AuthContext.
- * Deve ser usado dentro de um AuthProvider.
- */
-export function useAuthContext(): AuthContextData {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuthContext deve ser usado dentro de um AuthProvider');
-    }
-    return context;
-}
+export const useAuth = (): AuthContextValue => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth deve ser usado dentro de AuthProvider');
+  }
+  return context;
+};
+
+export const useAuthContext = useAuth;

@@ -16,9 +16,11 @@ export const apiRefresh: AxiosInstance = axios.create(axiosConfig);
 
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/auth/login',
-    REFRESH: '/auth/refresh',
-    LOGOUT: '/auth/logout',
+    LOGIN:    '/auth/login',
+    REGISTER: '/auth/register',
+    REFRESH:  '/auth/refresh',
+    LOGOUT:   '/auth/logout',
+    GOOGLE:   '/auth/google',
   },
   NUTRITIONISTS: {
     ME: '/nutritionists/me',
