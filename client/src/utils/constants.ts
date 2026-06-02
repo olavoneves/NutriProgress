@@ -20,6 +20,18 @@ export const DATE_FORMATS = {
     ISO: "yyyy-MM-dd'T'HH:mm:ss.SSSxxx",
 } as const;
 
+/** Especialidades do nutricionista */
+export const SPECIALTY_LABELS: Record<string, string> = {
+  SPORTS_NUTRITION:   'Nutrição Esportiva',
+  CLINICAL_NUTRITION: 'Nutrição Clínica',
+  PEDIATRIC_NUTRITION:'Nutrição Pediátrica',
+  ONCOLOGY_NUTRITION: 'Nutrição Oncológica',
+  GERIATRIC_NUTRITION:'Nutrição Geriátrica',
+  MATERNAL_NUTRITION: 'Nutrição Materno-Infantil',
+  RENAL_NUTRITION:    'Nutrição Renal',
+  GENERAL:            'Nutrição Geral',
+};
+
 /** Unidades de medida antropométricas */
 export const UNITS = {
     WEIGHT: 'kg',
