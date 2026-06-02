@@ -1,1 +1,0 @@
-{"version":3,"file":"MainLayout.styles.d.ts","sourceRoot":"","sources":["MainLayout.styles.ts"],"names":[],"mappings":"AAEA,UAAU,gBAAgB;IACxB,UAAU,EAAE,OAAO,CAAC;CACrB;AAED,UAAU,qBAAqB;IAC7B,cAAc,EAAE,OAAO,CAAC;IACxB,QAAQ,EAAE,MAAM,CAAC;CAClB;AAED,eAAO,MAAM,eAAe,6NAK3B,CAAC;AAEF,eAAO,MAAM,aAAa,6NAIzB,CAAC;AAEF,eAAO,MAAM,WAAW,+OA4BvB,CAAC;AAEF,eAAO,MAAM,gBAAgB,0PAgB5B,CAAC"}
