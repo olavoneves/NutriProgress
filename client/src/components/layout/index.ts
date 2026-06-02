@@ -6,3 +6,5 @@ export type { SidebarProps, SidebarMenuItem, SidebarSection } from './Sidebar';
 
 export { MainLayout } from './MainLayout';
 export type { MainLayoutProps } from './MainLayout';
+
+export { AuthLayout } from './AuthLayout';
