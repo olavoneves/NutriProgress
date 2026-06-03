@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Header } from '../Header';
 import { Sidebar } from '../Sidebar';
 import type { SidebarSection } from '../Sidebar';
+import { useLocalStorage } from '@hooks/useLocalStorage';
 import {
   LayoutContainer,
   LayoutWrapper,
@@ -37,10 +37,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
   contentPadding = true,
   maxWidth = '1280px',
 }) => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(initialCollapsed);
+  const [sidebarCollapsed, setSidebarCollapsed] = useLocalStorage(
+    'sidebar_collapsed',
+    initialCollapsed
+  );
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(prev => !prev);
+    setSidebarCollapsed((prev) => !prev);
   };
 
   return (
