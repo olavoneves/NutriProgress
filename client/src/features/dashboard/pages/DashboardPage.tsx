@@ -1,225 +1,171 @@
-import { Card } from '@components/ui/Card';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@components/ui/Button';
+import { useAuth } from '@store/auth';
+import { useDashboard } from '../hooks';
+import { StatCard } from '../components/StatCard';
+import { RecentPatientsList } from '../components/RecentPatientsList';
+import { EvaluationsMiniChart } from '../components/EvaluationsMiniChart';
+import { ROUTES } from '@routes/routes.config';
 import {
-    PageHeader,
-    PageTitle,
-    PageSubtitle,
-    StatsGrid,
-    StatCard,
-    StatIcon,
-    StatContent,
-    StatValue,
-    StatLabel,
-    StatChange,
-    ContentGrid,
-    SectionTitle,
-    ActivityList,
-    ActivityItem,
-    ActivityDot,
-    ActivityContent,
-    ActivityText,
-    ActivityTime,
-    QuickActions,
-    QuickActionButton,
-    EmptyChart,
+  PageHeader,
+  PageTitle,
+  PageSubtitle,
+  WelcomeBanner,
+  WelcomeBannerText,
+  WelcomeBannerTitle,
+  WelcomeBannerSubtitle,
+  StatsGrid,
+  ContentGrid,
+  ContentMain,
+  ContentAside,
 } from './DashboardPage.styles';
 
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24"
+       fill="none" stroke="currentColor" strokeWidth="2.5">
+    <line x1="12" y1="5" x2="12" y2="19" />
+    <line x1="5" y1="12" x2="19" y2="12" />
+  </svg>
+);
+
+const UsersIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+
+const FileIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+  </svg>
+);
+
+const UserPlusIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <line x1="19" y1="8" x2="19" y2="14" />
+    <line x1="22" y1="11" x2="16" y2="11" />
+  </svg>
+);
+
+const ActivityIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+  </svg>
+);
+
 export const DashboardPage: React.FC = () => {
-    return (
-        <>
-            <PageHeader>
-                <PageTitle>Dashboard</PageTitle>
-                <PageSubtitle>
-                    Bem-vindo de volta! Aqui está um resumo da sua atividade.
-                </PageSubtitle>
-            </PageHeader>
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { data, isLoading } = useDashboard();
 
-            {/* Stats Cards */}
-            <StatsGrid>
-                <StatCard>
-                    <StatIcon $color="primary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                        </svg>
-                    </StatIcon>
-                    <StatContent>
-                        <StatValue>24</StatValue>
-                        <StatLabel>Pacientes ativos</StatLabel>
-                        <StatChange $positive={true}>+3 este mês</StatChange>
-                    </StatContent>
-                </StatCard>
+  const firstName = user?.name?.split(' ')[0] ?? 'Nutricionista';
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
 
-                <StatCard>
-                    <StatIcon $color="info">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                    </StatIcon>
-                    <StatContent>
-                        <StatValue>8</StatValue>
-                        <StatLabel>Avaliações este mês</StatLabel>
-                        <StatChange $positive={true}>+12%</StatChange>
-                    </StatContent>
-                </StatCard>
+  return (
+    <>
+      <PageHeader>
+        <div>
+          <PageTitle>Dashboard</PageTitle>
+          <PageSubtitle>
+            {greeting}, {firstName}! Aqui está o resumo de hoje.
+          </PageSubtitle>
+        </div>
+        <Button
+          variant="primary"
+          onClick={() => navigate(ROUTES.PATIENT_NEW)}
+          leftIcon={<PlusIcon />}
+        >
+          Novo Paciente
+        </Button>
+      </PageHeader>
 
-                <StatCard>
-                    <StatIcon $color="warning">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
-                    </StatIcon>
-                    <StatContent>
-                        <StatValue>5</StatValue>
-                        <StatLabel>Pendentes esta semana</StatLabel>
-                        <StatChange $positive={false}>2 atrasadas</StatChange>
-                    </StatContent>
-                </StatCard>
+      {!isLoading && data?.stats.totalPatients === 0 && (
+        <WelcomeBanner>
+          <WelcomeBannerText>
+            <WelcomeBannerTitle>
+              Bem-vindo ao NutriProgress!
+            </WelcomeBannerTitle>
+            <WelcomeBannerSubtitle>
+              Comece cadastrando seu primeiro paciente e acompanhe
+              a evolução nutricional de forma prática.
+            </WelcomeBannerSubtitle>
+          </WelcomeBannerText>
+          <Button
+            variant="outline"
+            onClick={() => navigate(ROUTES.PATIENT_NEW)}
+          >
+            Cadastrar Primeiro Paciente
+          </Button>
+        </WelcomeBanner>
+      )}
 
-                <StatCard>
-                    <StatIcon $color="primary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="20" x2="18" y2="10" />
-                            <line x1="12" y1="20" x2="12" y2="4" />
-                            <line x1="6" y1="20" x2="6" y2="14" />
-                        </svg>
-                    </StatIcon>
-                    <StatContent>
-                        <StatValue>156</StatValue>
-                        <StatLabel>Total de avaliações</StatLabel>
-                        <StatChange $positive={true}>+8% vs. mês anterior</StatChange>
-                    </StatContent>
-                </StatCard>
-            </StatsGrid>
+      <StatsGrid>
+        <StatCard
+          label="Pacientes Ativos"
+          value={isLoading ? '—' : (data?.stats.activePatients ?? 0)}
+          color="green"
+          isLoading={isLoading}
+          onClick={() => navigate(ROUTES.PATIENTS)}
+          icon={<UsersIcon />}
+          footer={`${data?.stats.totalPatients ?? 0} no total`}
+        />
 
-            {/* Content Grid */}
-            <ContentGrid>
-                {/* Left — Activity & Chart */}
-                <div>
-                    <Card variant="default" padding="medium">
-                        <Card.Header>
-                            <Card.Title>Evolução de Avaliações</Card.Title>
-                            <Card.Description>Número de avaliações realizadas nos últimos 6 meses</Card.Description>
-                        </Card.Header>
-                        <Card.Body>
-                            <EmptyChart>📊 Gráfico será integrado aqui</EmptyChart>
-                        </Card.Body>
-                    </Card>
+        <StatCard
+          label="Avaliações este Mês"
+          value={isLoading ? '—' : (data?.stats.evaluationsThisMonth ?? 0)}
+          color="blue"
+          isLoading={isLoading}
+          icon={<FileIcon />}
+          footer={`${data?.stats.totalEvaluations ?? 0} no total`}
+        />
 
-                    <div style={{ marginTop: '1.5rem' }}>
-                        <SectionTitle>Atividade Recente</SectionTitle>
-                        <ActivityList>
-                            <ActivityItem>
-                                <ActivityDot $color="#10b981" />
-                                <ActivityContent>
-                                    <ActivityText>Avaliação de Maria Silva concluída</ActivityText>
-                                    <ActivityTime>Há 2 horas</ActivityTime>
-                                </ActivityContent>
-                            </ActivityItem>
-                            <ActivityItem>
-                                <ActivityDot $color="#3b82f6" />
-                                <ActivityContent>
-                                    <ActivityText>Novo paciente cadastrado: João Oliveira</ActivityText>
-                                    <ActivityTime>Há 5 horas</ActivityTime>
-                                </ActivityContent>
-                            </ActivityItem>
-                            <ActivityItem>
-                                <ActivityDot $color="#f59e0b" />
-                                <ActivityContent>
-                                    <ActivityText>Avaliação agendada: Ana Costa — amanhã 14:00</ActivityText>
-                                    <ActivityTime>Ontem</ActivityTime>
-                                </ActivityContent>
-                            </ActivityItem>
-                            <ActivityItem>
-                                <ActivityDot $color="#10b981" />
-                                <ActivityContent>
-                                    <ActivityText>Avaliação de Pedro Santos concluída</ActivityText>
-                                    <ActivityTime>2 dias atrás</ActivityTime>
-                                </ActivityContent>
-                            </ActivityItem>
-                        </ActivityList>
-                    </div>
-                </div>
+        <StatCard
+          label="Total de Pacientes"
+          value={isLoading ? '—' : (data?.stats.totalPatients ?? 0)}
+          color="purple"
+          isLoading={isLoading}
+          icon={<UserPlusIcon />}
+          footer={`${data?.stats.activePatients ?? 0} ativos`}
+        />
 
-                {/* Right — Quick Actions */}
-                <div>
-                    <Card variant="default" padding="medium">
-                        <Card.Header>
-                            <Card.Title>Ações Rápidas</Card.Title>
-                        </Card.Header>
-                        <Card.Body>
-                            <QuickActions>
-                                <QuickActionButton>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                                        <circle cx="9" cy="7" r="4" />
-                                        <line x1="19" y1="8" x2="19" y2="14" />
-                                        <line x1="22" y1="11" x2="16" y2="11" />
-                                    </svg>
-                                    Novo paciente
-                                </QuickActionButton>
-                                <QuickActionButton>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                        <polyline points="14 2 14 8 20 8" />
-                                        <line x1="12" y1="18" x2="12" y2="12" />
-                                        <line x1="9" y1="15" x2="15" y2="15" />
-                                    </svg>
-                                    Nova avaliação
-                                </QuickActionButton>
-                                <QuickActionButton>
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                        <line x1="18" y1="20" x2="18" y2="10" />
-                                        <line x1="12" y1="20" x2="12" y2="4" />
-                                        <line x1="6" y1="20" x2="6" y2="14" />
-                                    </svg>
-                                    Ver relatórios
-                                </QuickActionButton>
-                            </QuickActions>
-                        </Card.Body>
-                    </Card>
+        <StatCard
+          label="Total de Avaliações"
+          value={isLoading ? '—' : (data?.stats.totalEvaluations ?? 0)}
+          color="orange"
+          isLoading={isLoading}
+          icon={<ActivityIcon />}
+          footer="registros históricos"
+        />
+      </StatsGrid>
 
-                    <div style={{ marginTop: '1.5rem' }}>
-                        <Card variant="outlined" padding="medium">
-                            <Card.Header>
-                                <Card.Title>Próximas Consultas</Card.Title>
-                            </Card.Header>
-                            <Card.Body>
-                                <ActivityList>
-                                    <ActivityItem>
-                                        <ActivityDot $color="#3b82f6" />
-                                        <ActivityContent>
-                                            <ActivityText>Ana Costa</ActivityText>
-                                            <ActivityTime>Amanhã — 14:00</ActivityTime>
-                                        </ActivityContent>
-                                    </ActivityItem>
-                                    <ActivityItem>
-                                        <ActivityDot $color="#3b82f6" />
-                                        <ActivityContent>
-                                            <ActivityText>Carlos Mendes</ActivityText>
-                                            <ActivityTime>Qui — 09:30</ActivityTime>
-                                        </ActivityContent>
-                                    </ActivityItem>
-                                    <ActivityItem>
-                                        <ActivityDot $color="#3b82f6" />
-                                        <ActivityContent>
-                                            <ActivityText>Fernanda Lima</ActivityText>
-                                            <ActivityTime>Sex — 16:00</ActivityTime>
-                                        </ActivityContent>
-                                    </ActivityItem>
-                                </ActivityList>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                </div>
-            </ContentGrid>
-        </>
-    );
+      <ContentGrid>
+        <ContentMain>
+          <EvaluationsMiniChart
+            isLoading={isLoading}
+            totalThisMonth={data?.stats.evaluationsThisMonth}
+          />
+        </ContentMain>
+
+        <ContentAside>
+          <RecentPatientsList
+            patients={data?.recentPatients ?? []}
+            isLoading={isLoading}
+          />
+        </ContentAside>
+      </ContentGrid>
+    </>
+  );
 };
 
 DashboardPage.displayName = 'DashboardPage';

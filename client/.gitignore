@@ -22,3 +22,13 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TypeScript build artifacts (emitDeclarationOnly generates these inside src/)
+src/**/*.d.ts.map
+src/**/*.d.ts
+!src/styled.d.ts
+
+# Vite root-level generated files
+vite.config.d.ts
+vite.config.d.ts.map
+vite.config.js
