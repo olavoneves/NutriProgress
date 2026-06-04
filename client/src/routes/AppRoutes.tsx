@@ -1,12 +1,47 @@
+import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from './routes.config';
 import { LoginPage, RegisterPage } from '@features/auth';
 import { DashboardPage } from '@features/dashboard';
 import { MainLayout } from '@components/layout/MainLayout';
 import { PrivateRoute } from '@components/common/PrivateRoute';
+import { Loading } from '@components/common/Loading';
 import { useAuth } from '@store/auth';
 import { useNutritionist } from '@features/profile';
 import { buildSidebarSections } from '@/config/sidebar.config';
+
+const PatientsListPage = React.lazy(
+  () => import('@features/patients/pages/PatientsListPage')
+);
+const PatientDetailsPage = React.lazy(
+  () => import('@features/patients/pages/PatientDetailsPage')
+);
+const CreatePatientPage = React.lazy(
+  () => import('@features/patients/pages/CreatePatientPage')
+);
+const EditPatientPage = React.lazy(
+  () => import('@features/patients/pages/EditPatientPage')
+);
+
+const PlaceholderPage: React.FC<{ title: string; description: string }> = ({
+  title,
+  description,
+}) => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '400px',
+    textAlign: 'center',
+    color: '#6b7280',
+  }}>
+    <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#111827' }}>
+      {title}
+    </h1>
+    <p>{description}</p>
+  </div>
+);
 
 const ProtectedLayout: React.FC = () => {
   const { isAuthenticated, isLoading, user, logout } = useAuth();
@@ -29,26 +64,6 @@ const ProtectedLayout: React.FC = () => {
   );
 };
 
-const PlaceholderPage: React.FC<{ title: string; description: string }> = ({
-  title,
-  description,
-}) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '400px',
-    textAlign: 'center',
-    color: '#6b7280',
-  }}>
-    <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#111827' }}>
-      {title}
-    </h1>
-    <p>{description}</p>
-  </div>
-);
-
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
@@ -58,20 +73,81 @@ export const AppRoutes: React.FC = () => {
 
       {/* Rotas protegidas com MainLayout */}
       <Route element={<ProtectedLayout />}>
-        <Route path={ROUTES.DASHBOARD}        element={<DashboardPage />} />
-        <Route path={ROUTES.PATIENTS}         element={<PlaceholderPage title="Pacientes" description="Listagem de pacientes será implementada aqui." />} />
-        <Route path={ROUTES.PATIENTS_ARCHIVED} element={<PlaceholderPage title="Arquivados" description="Pacientes arquivados serão listados aqui." />} />
-        <Route path={ROUTES.PATIENT_NEW}      element={<PlaceholderPage title="Novo Paciente" description="Formulário de cadastro será implementado aqui." />} />
-        <Route path={ROUTES.EVALUATIONS}      element={<PlaceholderPage title="Avaliações" description="Listagem de avaliações será implementada aqui." />} />
-        <Route path={ROUTES.PROFILE}          element={<PlaceholderPage title="Meu Perfil" description="Página de perfil será implementada aqui." />} />
-        <Route path={ROUTES.BILLING}          element={<PlaceholderPage title="Plano & Assinatura" description="Gestão do plano será implementada aqui." />} />
+        <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+
+        {/* Patients */}
+        <Route
+          path={ROUTES.PATIENTS}
+          element={
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <PatientsListPage />
+            </React.Suspense>
+          }
+        />
+        <Route
+          path={ROUTES.PATIENT_CREATE}
+          element={
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <CreatePatientPage />
+            </React.Suspense>
+          }
+        />
+        <Route
+          path={ROUTES.PATIENT_DETAILS}
+          element={
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <PatientDetailsPage />
+            </React.Suspense>
+          }
+        />
+        <Route
+          path={ROUTES.PATIENT_EDIT}
+          element={
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <EditPatientPage />
+            </React.Suspense>
+          }
+        />
+
+        <Route
+          path={ROUTES.PATIENTS_ARCHIVED}
+          element={
+            <PlaceholderPage
+              title="Arquivados"
+              description="Pacientes arquivados serão listados aqui."
+            />
+          }
+        />
+        <Route
+          path={ROUTES.PROFILE}
+          element={
+            <PlaceholderPage
+              title="Meu Perfil"
+              description="Página de perfil será implementada aqui."
+            />
+          }
+        />
+        <Route
+          path={ROUTES.BILLING}
+          element={
+            <PlaceholderPage
+              title="Plano & Assinatura"
+              description="Gestão do plano será implementada aqui."
+            />
+          }
+        />
       </Route>
 
-      {/* Redirect root to dashboard */}
+      {/* Redirect root */}
       <Route path="/" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
 
       {/* 404 */}
-      <Route path={ROUTES.NOT_FOUND} element={<PlaceholderPage title="404" description="Página não encontrada." />} />
+      <Route
+        path={ROUTES.NOT_FOUND}
+        element={
+          <PlaceholderPage title="404" description="Página não encontrada." />
+        }
+      />
     </Routes>
   );
 };

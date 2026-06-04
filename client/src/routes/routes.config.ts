@@ -1,27 +1,21 @@
 
 export const ROUTES = {
-    // Auth
-    LOGIN: '/login',
-    REGISTER: '/register',
+  LOGIN:    '/login',
+  REGISTER: '/register',
 
-    // App
-    DASHBOARD: '/dashboard',
-    PROFILE: '/profile',
-    BILLING: '/billing',
+  DASHBOARD: '/dashboard',
+  PROFILE:   '/profile',
+  BILLING:   '/billing',
 
-    // Patients
-    PATIENTS: '/patients',
-    PATIENT_DETAIL: (id: string) => `/patients/${id}`,
-    PATIENT_NEW: '/patients/new',
-    PATIENT_EDIT: (id: string) => `/patients/${id}/edit`,
-    PATIENTS_ARCHIVED: '/patients/archived',
+  PATIENTS:          '/patients',
+  PATIENT_CREATE:    '/patients/new',
+  PATIENT_DETAILS:   '/patients/:id',
+  PATIENT_EDIT:      '/patients/:id/edit',
+  PATIENTS_ARCHIVED: '/patients/archived',
 
-    // Evaluations
-    EVALUATIONS: '/evaluations',
-    EVALUATION_DETAIL: (id: string) => `/evaluations/${id}`,
-    EVALUATION_NEW: (patientId: string) => `/patients/${patientId}/evaluations/new`,
+  EVALUATION_CREATE:  '/patients/:patientId/evaluations/new',
+  EVALUATION_DETAILS: '/patients/:patientId/evaluations/:id',
 
-    // Errors
-    UNAUTHORIZED: '/unauthorized',
-    NOT_FOUND: '*',
+  UNAUTHORIZED: '/unauthorized',
+  NOT_FOUND: '*',
 } as const;

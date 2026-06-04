@@ -85,7 +85,7 @@ export const RecentPatientsList: React.FC<RecentPatientsListProps> = ({
             </svg>
           </EmptyIcon>
           <p>Nenhum paciente cadastrado ainda</p>
-          <button onClick={() => navigate(ROUTES.PATIENT_NEW)}>
+          <button onClick={() => navigate(ROUTES.PATIENT_CREATE)}>
             Cadastrar primeiro paciente
           </button>
         </EmptyState>
@@ -93,7 +93,7 @@ export const RecentPatientsList: React.FC<RecentPatientsListProps> = ({
         patients.map((patient) => (
           <PatientItem
             key={patient.id}
-            onClick={() => navigate(ROUTES.PATIENT_DETAIL(patient.id))}
+            onClick={() => navigate(ROUTES.PATIENT_DETAILS.replace(':id', patient.id))}
             $skeleton={false}
           >
             <PatientAvatar
