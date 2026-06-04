@@ -20,6 +20,13 @@ export const DATE_FORMATS = {
     ISO: "yyyy-MM-dd'T'HH:mm:ss.SSSxxx",
 } as const;
 
+/** Gênero do paciente */
+export const GENDER_LABELS: Record<'MALE' | 'FEMALE' | 'OTHER', string> = {
+  MALE:   'Masculino',
+  FEMALE: 'Feminino',
+  OTHER:  'Outro',
+};
+
 /** Especialidades do nutricionista */
 export const SPECIALTY_LABELS: Record<string, string> = {
   SPORTS_NUTRITION:   'Nutrição Esportiva',
