@@ -12,7 +12,8 @@ export const formatRelative = (dateStr: string): string => {
   }
 };
 
-export const formatDate = (dateStr: string, pattern = 'dd/MM/yyyy'): string => {
+export const formatDate = (dateStr: string | null | undefined, pattern = 'dd/MM/yyyy'): string => {
+  if (!dateStr) return '—';
   try {
     return format(parseISO(dateStr), pattern, { locale: ptBR });
   } catch {

@@ -1,8 +1,12 @@
-export const formatWeight = (value: number): string =>
-  `${value.toFixed(1)} kg`;
+export const formatWeight = (value: number | null | undefined): string => {
+  if (value == null) return '—';
+  return `${value.toFixed(1)} kg`;
+};
 
-export const formatHeight = (value: number): string =>
-  `${value.toFixed(1)} cm`;
+export const formatHeight = (value: number | null | undefined): string => {
+  if (value == null) return '—';
+  return `${value.toFixed(1)} cm`;
+};
 
 export const formatPercentage = (value: number): string =>
   `${value.toFixed(1)}%`;

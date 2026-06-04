@@ -83,7 +83,7 @@ export const DashboardPage: React.FC = () => {
         </div>
         <Button
           variant="primary"
-          onClick={() => navigate(ROUTES.PATIENT_NEW)}
+          onClick={() => navigate(ROUTES.PATIENT_CREATE)}
           leftIcon={<PlusIcon />}
         >
           Novo Paciente
@@ -103,7 +103,7 @@ export const DashboardPage: React.FC = () => {
           </WelcomeBannerText>
           <Button
             variant="outline"
-            onClick={() => navigate(ROUTES.PATIENT_NEW)}
+            onClick={() => navigate(ROUTES.PATIENT_CREATE)}
           >
             Cadastrar Primeiro Paciente
           </Button>

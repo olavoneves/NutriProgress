@@ -1,2 +1,8 @@
 export { patientService } from './patientService';
-export type { PatientSummary, PatientListResponse, PatientFilters } from './patientService';
+export type {
+  PatientDetail,
+  CreatePatientData,
+  PatientSummary,
+  PatientListResponse,
+  PatientFilters,
+} from './patientService';

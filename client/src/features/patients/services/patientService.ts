@@ -1,10 +1,47 @@
 import { api, API_ENDPOINTS } from '@lib/api';
-import type {
-  Patient,
-  PatientSummary,
-  PatientListResponse,
-  PatientFilters,
-} from '../types';
+import type { PatientSummary, PatientListResponse, PatientFilters } from '../types';
+
+export interface PatientDetail {
+  id: string;
+  nutritionistId: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  birthDate?: string;
+  age?: number;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
+  height?: number;
+  goal?: string;
+  notes?: string;
+  isActive: boolean;
+  lastEvaluation?: {
+    evaluationId: string;
+    evaluationDate: string;
+    evaluationNumber: number;
+    weight?: number;
+    bmi?: number;
+    bodyFatPercentage?: number;
+  };
+  stats?: {
+    totalEvaluations: number;
+    firstEvaluationDate?: string;
+    lastEvaluationDate?: string;
+    daysSinceLastEvaluation?: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePatientData {
+  fullName: string;
+  email?: string;
+  phone?: string;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
+  birthDate?: string;
+  height?: number;
+  goal?: string;
+  notes?: string;
+}
 
 const list = async (
   filters: PatientFilters = {}
@@ -23,15 +60,15 @@ const list = async (
   return response.data.data;
 };
 
-const getById = async (id: string): Promise<Patient> => {
-  const response = await api.get<{ data: Patient }>(
+const getDetailById = async (id: string): Promise<PatientDetail> => {
+  const response = await api.get<{ data: PatientDetail }>(
     API_ENDPOINTS.PATIENTS.BY_ID(id)
   );
   return response.data.data;
 };
 
-const create = async (data: Partial<Patient>): Promise<Patient> => {
-  const response = await api.post<{ data: Patient }>(
+const create = async (data: CreatePatientData): Promise<PatientDetail> => {
+  const response = await api.post<{ data: PatientDetail }>(
     API_ENDPOINTS.PATIENTS.BASE,
     data
   );
@@ -40,9 +77,9 @@ const create = async (data: Partial<Patient>): Promise<Patient> => {
 
 const update = async (
   id: string,
-  data: Partial<Patient>
-): Promise<Patient> => {
-  const response = await api.put<{ data: Patient }>(
+  data: Partial<CreatePatientData>
+): Promise<PatientDetail> => {
+  const response = await api.put<{ data: PatientDetail }>(
     API_ENDPOINTS.PATIENTS.BY_ID(id),
     data
   );
@@ -59,7 +96,7 @@ const restore = async (id: string): Promise<void> => {
 
 export const patientService = {
   list,
-  getById,
+  getDetailById,
   create,
   update,
   archive,
