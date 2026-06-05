@@ -22,6 +22,12 @@ const CreatePatientPage = React.lazy(
 const EditPatientPage = React.lazy(
   () => import('@features/patients/pages/EditPatientPage')
 );
+const CreateEvaluationPage = React.lazy(
+  () => import('@features/evaluations/pages/CreateEvaluationPage')
+);
+const EvolutionPage = React.lazy(
+  () => import('@features/evaluations/pages/EvolutionPage')
+);
 
 const PlaceholderPage: React.FC<{ title: string; description: string }> = ({
   title,
@@ -105,6 +111,24 @@ export const AppRoutes: React.FC = () => {
           element={
             <React.Suspense fallback={<Loading text="Carregando..." />}>
               <EditPatientPage />
+            </React.Suspense>
+          }
+        />
+
+        {/* Evaluations */}
+        <Route
+          path={ROUTES.EVALUATION_CREATE}
+          element={
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <CreateEvaluationPage />
+            </React.Suspense>
+          }
+        />
+        <Route
+          path={ROUTES.PATIENT_EVOLUTION}
+          element={
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <EvolutionPage />
             </React.Suspense>
           }
         />

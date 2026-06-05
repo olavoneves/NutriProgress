@@ -1,0 +1,1 @@
+export { calculateEvolution } from './evolutionCalculator';
