@@ -6,6 +6,10 @@ import { Modal } from '@components/ui/Modal';
 import { usePatientDetails, usePatientMutations } from '../hooks';
 import { PatientDetailCard } from '../components/PatientDetailCard';
 import { PatientBadge } from '../components/PatientBadge';
+import { useEvaluations, useEvaluationMutations }
+  from '@features/evaluations/hooks';
+import { EvaluationCard }
+  from '@features/evaluations/components/EvaluationCard';
 import { ROUTES } from '@routes/routes.config';
 import {
   PageHeader,
@@ -27,9 +31,15 @@ import {
 const PatientDetailsPage: React.FC = () => {
   const navigate = useNavigate();
   const { id }   = useParams<{ id: string }>();
+
   const { patient, isLoading, error, refetch } = usePatientDetails(id);
   const { archivePatient, restorePatient, isLoading: mutating } =
     usePatientMutations();
+
+  const { evaluations, isLoading: loadingEvals, refetch: refetchEvals } =
+    useEvaluations(id);
+  const { deleteEvaluation, isLoading: deletingEval } =
+    useEvaluationMutations();
 
   const [showArchiveModal, setShowArchiveModal] = useState(false);
 
@@ -44,6 +54,11 @@ const PatientDetailsPage: React.FC = () => {
     if (!id) return;
     await restorePatient(id);
     void refetch();
+  };
+
+  const handleDeleteEvaluation = async (evaluationId: string) => {
+    await deleteEvaluation(id!, evaluationId);
+    void refetchEvals();
   };
 
   if (isLoading) {
@@ -123,19 +138,38 @@ const PatientDetailsPage: React.FC = () => {
         <ContentMain>
           <SectionCard>
             <SectionHeader>
-              <SectionTitle>Avaliações</SectionTitle>
-              <SectionAction
-                onClick={() =>
-                  navigate(
-                    ROUTES.EVALUATION_CREATE.replace(':patientId', id!)
-                  )
-                }
-              >
-                + Nova Avaliação
-              </SectionAction>
+              <SectionTitle>
+                Avaliações ({evaluations.length})
+              </SectionTitle>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {evaluations.length >= 2 && (
+                  <SectionAction
+                    onClick={() =>
+                      navigate(
+                        ROUTES.PATIENT_EVOLUTION.replace(':patientId', id!)
+                      )
+                    }
+                  >
+                    Ver evolução
+                  </SectionAction>
+                )}
+                <SectionAction
+                  onClick={() =>
+                    navigate(
+                      ROUTES.EVALUATION_CREATE.replace(':patientId', id!)
+                    )
+                  }
+                >
+                  + Nova
+                </SectionAction>
+              </div>
             </SectionHeader>
 
-            {(patient.stats?.totalEvaluations ?? 0) === 0 ? (
+            {loadingEvals ? (
+              <div style={{ padding: '1rem' }}>
+                <Loading />
+              </div>
+            ) : evaluations.length === 0 ? (
               <EmptyEvaluations>
                 <p>Nenhuma avaliação registrada ainda.</p>
                 <Button
@@ -151,15 +185,22 @@ const PatientDetailsPage: React.FC = () => {
                 </Button>
               </EmptyEvaluations>
             ) : (
-              <p style={{
-                fontSize: '0.875rem',
-                color: '#6b7280',
-                padding: '1rem 1.5rem',
-                margin: 0,
+              <div style={{
+                display:       'flex',
+                flexDirection: 'column',
+                gap:           '1rem',
+                padding:       '1rem',
               }}>
-                {patient.stats?.totalEvaluations} avaliações registradas
-                — implementado no Day 15.
-              </p>
+                {evaluations.map((ev) => (
+                  <EvaluationCard
+                    key={ev.id}
+                    evaluation={ev}
+                    patientId={id!}
+                    onDelete={handleDeleteEvaluation}
+                    isDeleting={deletingEval}
+                  />
+                ))}
+              </div>
             )}
           </SectionCard>
         </ContentMain>
