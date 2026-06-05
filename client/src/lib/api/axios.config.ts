@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
     ARCHIVE: (id: string) => `/patients/${id}/archive`,
     RESTORE: (id: string) => `/patients/${id}/restore`,
     EVALUATIONS: (id: string) => `/patients/${id}/evaluations`,
+    EVOLUTION:   (id: string) => `/patients/${id}/evolution`,
   },
   EVALUATIONS: {
     BASE: '/evaluations',
