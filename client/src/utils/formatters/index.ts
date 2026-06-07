@@ -5,4 +5,5 @@ export {
   formatPercentage,
   formatBMI,
   formatNumber,
+  formatCurrency,
 } from './number';
