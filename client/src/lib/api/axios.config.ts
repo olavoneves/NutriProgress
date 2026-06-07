@@ -38,6 +38,11 @@ export const API_ENDPOINTS = {
     BASE: '/evaluations',
     BY_ID: (id: string) => `/evaluations/${id}`,
   },
+  BILLING: {
+    SUBSCRIPTION: '/billing/subscription',
+    CHECKOUT:     '/billing/checkout',
+    CANCEL:       '/billing/cancel',
+  },
 } as const;
 
 export const HTTP_STATUS = {
