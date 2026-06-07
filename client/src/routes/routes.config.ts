@@ -5,7 +5,9 @@ export const ROUTES = {
 
   DASHBOARD: '/dashboard',
   PROFILE:   '/profile',
-  BILLING:   '/billing',
+  BILLING:          '/billing',
+  BILLING_SUCCESS:  '/billing/success',
+  BILLING_CANCEL:   '/billing/cancel',
 
   PATIENTS:          '/patients',
   PATIENT_CREATE:    '/patients/new',

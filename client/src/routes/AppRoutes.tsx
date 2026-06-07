@@ -28,6 +28,15 @@ const CreateEvaluationPage = React.lazy(
 const EvolutionPage = React.lazy(
   () => import('@features/evaluations/pages/EvolutionPage')
 );
+const BillingPage = React.lazy(
+  () => import('@features/billing/pages/BillingPage')
+);
+const CheckoutSuccessPage = React.lazy(
+  () => import('@features/billing/pages/CheckoutSuccessPage')
+);
+const CheckoutCancelPage = React.lazy(
+  () => import('@features/billing/pages/CheckoutCancelPage')
+);
 
 const PlaceholderPage: React.FC<{ title: string; description: string }> = ({
   title,
@@ -154,13 +163,30 @@ export const AppRoutes: React.FC = () => {
         <Route
           path={ROUTES.BILLING}
           element={
-            <PlaceholderPage
-              title="Plano & Assinatura"
-              description="Gestão do plano será implementada aqui."
-            />
+            <React.Suspense fallback={<Loading text="Carregando..." />}>
+              <BillingPage />
+            </React.Suspense>
           }
         />
       </Route>
+
+      {/* Rotas públicas do checkout Stripe */}
+      <Route
+        path={ROUTES.BILLING_SUCCESS}
+        element={
+          <React.Suspense fallback={<Loading text="Carregando..." />}>
+            <CheckoutSuccessPage />
+          </React.Suspense>
+        }
+      />
+      <Route
+        path={ROUTES.BILLING_CANCEL}
+        element={
+          <React.Suspense fallback={<Loading text="Carregando..." />}>
+            <CheckoutCancelPage />
+          </React.Suspense>
+        }
+      />
 
       {/* Redirect root */}
       <Route path="/" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
