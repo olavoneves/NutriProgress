@@ -87,3 +87,27 @@ export const CardFooterItem = styled.span`
   color: ${tokens.colors.gray[500]};
   font-weight: ${tokens.typography.fontWeight.medium};
 `;
+
+export const CardRestoreButton = styled.button`
+  margin-left: auto;
+  background: none;
+  border: 1px solid ${tokens.colors.gray[200]};
+  border-radius: ${tokens.borderRadius.md};
+  padding: 0.25rem 0.625rem;
+  font-family: inherit;
+  font-size: ${tokens.typography.fontSize.xs};
+  font-weight: ${tokens.typography.fontWeight.medium};
+  color: ${tokens.colors.brand};
+  cursor: pointer;
+  transition: ${tokens.transitions.fast};
+
+  &:hover:not(:disabled) {
+    background-color: ${tokens.colors.primary[50]};
+    border-color: ${tokens.colors.brand};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
