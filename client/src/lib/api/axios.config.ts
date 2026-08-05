@@ -43,6 +43,11 @@ export const API_ENDPOINTS = {
     CHECKOUT:     '/billing/checkout',
     CANCEL:       '/billing/cancel',
   },
+  LGPD: {
+    EXPORT:            '/lgpd/export',
+    ANONYMIZE_PATIENT: '/lgpd/anonymize-patient',
+    ACCOUNT:           '/lgpd/account',
+  },
 } as const;
 
 export const HTTP_STATUS = {

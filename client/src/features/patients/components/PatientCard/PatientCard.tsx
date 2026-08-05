@@ -13,6 +13,7 @@ import {
   CardMetaItem,
   CardFooter,
   CardFooterItem,
+  CardRestoreButton,
 } from './PatientCard.styles';
 
 const AVATAR_COLORS = [
@@ -27,10 +28,17 @@ const getInitials = (name: string) =>
   name.split(' ').map((w) => w[0]).join('').substring(0, 2).toUpperCase();
 
 interface PatientCardProps {
-  patient: PatientSummary;
+  patient:      PatientSummary;
+  /** Quando informado, exibe a ação de restaurar (usado na lista de arquivados). */
+  onRestore?:   (id: string) => void;
+  isRestoring?: boolean;
 }
 
-export const PatientCard: React.FC<PatientCardProps> = ({ patient }) => {
+export const PatientCard: React.FC<PatientCardProps> = ({
+  patient,
+  onRestore,
+  isRestoring = false,
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -101,6 +109,19 @@ export const PatientCard: React.FC<PatientCardProps> = ({ patient }) => {
           <CardFooterItem>
             {formatDate(patient.lastEvaluationDate)}
           </CardFooterItem>
+        )}
+
+        {onRestore && (
+          <CardRestoreButton
+            type="button"
+            disabled={isRestoring}
+            onClick={(e) => {
+              e.stopPropagation();
+              onRestore(patient.id);
+            }}
+          >
+            Restaurar
+          </CardRestoreButton>
         )}
       </CardFooter>
     </CardContainer>
