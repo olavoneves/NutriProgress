@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // `tsc -b` emite declarações dentro de src/ (já ignoradas no .gitignore);
+  // são artefatos de build, não código-fonte. `src/styled.d.ts` é fonte real.
+  globalIgnores(['dist', 'src/**/*.d.ts', '!src/styled.d.ts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

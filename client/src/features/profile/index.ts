@@ -1,3 +1,11 @@
-export { nutritionistService } from './services';
-export type { NutritionistProfile, UpdateNutritionistData } from './services';
-export { useNutritionist } from './hooks';
+export { nutritionistService, lgpdService } from './services';
+export type {
+  NutritionistProfile,
+  UpdateNutritionistData,
+  DataExport,
+} from './services';
+
+export { useNutritionist, useProfile } from './hooks';
+
+export { ProfileForm } from './components/ProfileForm';
+export type { ProfileSchema } from './components/ProfileForm';
