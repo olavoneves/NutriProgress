@@ -22,11 +22,23 @@ const CreatePatientPage = React.lazy(
 const EditPatientPage = React.lazy(
   () => import('@features/patients/pages/EditPatientPage')
 );
+const ArchivedPatientsPage = React.lazy(
+  () => import('@features/patients/pages/ArchivedPatientsPage')
+);
 const CreateEvaluationPage = React.lazy(
   () => import('@features/evaluations/pages/CreateEvaluationPage')
 );
+const EvaluationDetailsPage = React.lazy(
+  () => import('@features/evaluations/pages/EvaluationDetailsPage')
+);
+const EditEvaluationPage = React.lazy(
+  () => import('@features/evaluations/pages/EditEvaluationPage')
+);
 const EvolutionPage = React.lazy(
   () => import('@features/evaluations/pages/EvolutionPage')
+);
+const ProfilePage = React.lazy(
+  () => import('@features/profile/pages/ProfilePage')
 );
 const BillingPage = React.lazy(
   () => import('@features/billing/pages/BillingPage')
@@ -37,25 +49,15 @@ const CheckoutSuccessPage = React.lazy(
 const CheckoutCancelPage = React.lazy(
   () => import('@features/billing/pages/CheckoutCancelPage')
 );
+const NotFoundPage = React.lazy(
+  () => import('@features/shared/pages/NotFoundPage')
+);
 
-const PlaceholderPage: React.FC<{ title: string; description: string }> = ({
-  title,
-  description,
-}) => (
-  <div style={{
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: '400px',
-    textAlign: 'center',
-    color: '#6b7280',
-  }}>
-    <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem', color: '#111827' }}>
-      {title}
-    </h1>
-    <p>{description}</p>
-  </div>
+/** Envolve uma página lazy no Suspense padrão da aplicação. */
+const suspended = (node: React.ReactNode) => (
+  <React.Suspense fallback={<Loading text="Carregando..." />}>
+    {node}
+  </React.Suspense>
 );
 
 const ProtectedLayout: React.FC = () => {
@@ -90,114 +92,69 @@ export const AppRoutes: React.FC = () => {
       <Route element={<ProtectedLayout />}>
         <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
 
-        {/* Patients */}
+        {/*
+          Patients — segmentos estáticos ('/patients/new', '/patients/archived')
+          vêm antes do dinâmico '/patients/:id'.
+        */}
         <Route
           path={ROUTES.PATIENTS}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <PatientsListPage />
-            </React.Suspense>
-          }
+          element={suspended(<PatientsListPage />)}
         />
         <Route
           path={ROUTES.PATIENT_CREATE}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <CreatePatientPage />
-            </React.Suspense>
-          }
+          element={suspended(<CreatePatientPage />)}
+        />
+        <Route
+          path={ROUTES.PATIENTS_ARCHIVED}
+          element={suspended(<ArchivedPatientsPage />)}
         />
         <Route
           path={ROUTES.PATIENT_DETAILS}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <PatientDetailsPage />
-            </React.Suspense>
-          }
+          element={suspended(<PatientDetailsPage />)}
         />
         <Route
           path={ROUTES.PATIENT_EDIT}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <EditPatientPage />
-            </React.Suspense>
-          }
+          element={suspended(<EditPatientPage />)}
+        />
+        <Route
+          path={ROUTES.PATIENT_EVOLUTION}
+          element={suspended(<EvolutionPage />)}
         />
 
         {/* Evaluations */}
         <Route
           path={ROUTES.EVALUATION_CREATE}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <CreateEvaluationPage />
-            </React.Suspense>
-          }
+          element={suspended(<CreateEvaluationPage />)}
         />
         <Route
-          path={ROUTES.PATIENT_EVOLUTION}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <EvolutionPage />
-            </React.Suspense>
-          }
+          path={ROUTES.EVALUATION_DETAILS}
+          element={suspended(<EvaluationDetailsPage />)}
+        />
+        <Route
+          path={ROUTES.EVALUATION_EDIT}
+          element={suspended(<EditEvaluationPage />)}
         />
 
-        <Route
-          path={ROUTES.PATIENTS_ARCHIVED}
-          element={
-            <PlaceholderPage
-              title="Arquivados"
-              description="Pacientes arquivados serão listados aqui."
-            />
-          }
-        />
-        <Route
-          path={ROUTES.PROFILE}
-          element={
-            <PlaceholderPage
-              title="Meu Perfil"
-              description="Página de perfil será implementada aqui."
-            />
-          }
-        />
-        <Route
-          path={ROUTES.BILLING}
-          element={
-            <React.Suspense fallback={<Loading text="Carregando..." />}>
-              <BillingPage />
-            </React.Suspense>
-          }
-        />
+        {/* Conta */}
+        <Route path={ROUTES.PROFILE} element={suspended(<ProfilePage />)} />
+        <Route path={ROUTES.BILLING} element={suspended(<BillingPage />)} />
       </Route>
 
       {/* Rotas públicas do checkout Stripe */}
       <Route
         path={ROUTES.BILLING_SUCCESS}
-        element={
-          <React.Suspense fallback={<Loading text="Carregando..." />}>
-            <CheckoutSuccessPage />
-          </React.Suspense>
-        }
+        element={suspended(<CheckoutSuccessPage />)}
       />
       <Route
         path={ROUTES.BILLING_CANCEL}
-        element={
-          <React.Suspense fallback={<Loading text="Carregando..." />}>
-            <CheckoutCancelPage />
-          </React.Suspense>
-        }
+        element={suspended(<CheckoutCancelPage />)}
       />
 
       {/* Redirect root */}
       <Route path="/" element={<Navigate to={ROUTES.DASHBOARD} replace />} />
 
       {/* 404 */}
-      <Route
-        path={ROUTES.NOT_FOUND}
-        element={
-          <PlaceholderPage title="404" description="Página não encontrada." />
-        }
-      />
+      <Route path={ROUTES.NOT_FOUND} element={suspended(<NotFoundPage />)} />
     </Routes>
   );
 };
