@@ -1,16 +1,8 @@
-import { createContext, useContext, useCallback } from 'react';
+import { useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { useLocalStorage } from '@hooks/useLocalStorage';
-
-type ThemeMode = 'light' | 'dark';
-
-interface ThemeContextData {
-    mode: ThemeMode;
-    toggleMode: () => void;
-    setMode: (mode: ThemeMode) => void;
-}
-
-const ThemeContext = createContext<ThemeContextData | null>(null);
+import { ThemeContext } from './theme.context';
+import type { ThemeMode } from './theme.context';
 
 interface ThemeProviderProps {
     children: ReactNode;
@@ -42,14 +34,3 @@ export const ThemeModeProvider: React.FC<ThemeProviderProps> = ({
 };
 
 ThemeModeProvider.displayName = 'ThemeModeProvider';
-
-/**
- * Hook para acessar o ThemeContext (dark/light mode).
- */
-export function useThemeMode(): ThemeContextData {
-    const context = useContext(ThemeContext);
-    if (!context) {
-        throw new Error('useThemeMode deve ser usado dentro de um ThemeModeProvider');
-    }
-    return context;
-}

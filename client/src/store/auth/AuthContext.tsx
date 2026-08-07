@@ -1,20 +1,9 @@
-import React, {
-  createContext,
-  useContext,
-  useReducer,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, { useReducer, useCallback, useEffect } from 'react';
 import type { AuthUser, AuthTokens, LoginCredentials } from '../../@types';
 import { api, API_ENDPOINTS } from '@lib/api';
 import { getStoredTokens, setStoredTokens, clearStoredTokens } from '@lib/api';
-
-interface AuthState {
-  user:            AuthUser | null;
-  isAuthenticated: boolean;
-  isLoading:       boolean;
-  error:           string | null;
-}
+import { AuthContext } from './auth.context';
+import type { AuthState } from './auth.context';
 
 type AuthAction =
   | { type: 'AUTH_START' }
@@ -58,15 +47,6 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return state;
   }
 }
-
-interface AuthContextValue extends AuthState {
-  login:       (credentials: LoginCredentials) => Promise<void>;
-  loginGoogle: (idToken: string) => Promise<void>;
-  logout:      () => void;
-  clearError:  () => void;
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 interface LoginApiResponse {
   data: {
@@ -197,13 +177,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 AuthProvider.displayName = 'AuthProvider';
-
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth deve ser usado dentro de AuthProvider');
-  }
-  return context;
-};
-
-export const useAuthContext = useAuth;

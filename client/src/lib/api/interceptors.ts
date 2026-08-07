@@ -98,6 +98,18 @@ export const setupResponseInterceptor = (): void => {
     async (error: AxiosError<ApiError>) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+      // Requisições com `responseType: 'blob'` (ex.: download de PDF) recebem
+      // o corpo do ERRO também como Blob. Sem desempacotar, `data.message` e
+      // `data.errors` ficariam inacessíveis e todo erro viraria "Erro desconhecido".
+      if (error.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          error.response.data = JSON.parse(text) as ApiError;
+        } catch {
+          // Corpo não-JSON (ou vazio): segue com o fallback de mensagem padrão.
+        }
+      }
+
       // Log do erro
       if (import.meta.env.DEV) {
         console.error('[API Response Error]', {

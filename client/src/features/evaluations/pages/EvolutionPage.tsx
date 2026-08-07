@@ -4,6 +4,8 @@ import { Loading } from '@components/common/Loading';
 import { Button } from '@components/ui/Button';
 import { tokens } from '@styles/tokens';
 import { usePatientDetails } from '@features/patients/hooks';
+import { ExportPdfButton } from '@features/reports';
+import { useBilling } from '@features/billing';
 import { useEvaluations, useEvolution } from '../hooks';
 import { EvolutionChart }  from '../components/EvolutionChart';
 import { ComparisonTable } from '../components/ComparisonTable';
@@ -27,6 +29,7 @@ const EvolutionPage: React.FC = () => {
     usePatientDetails(patientId);
   const { evaluations, isLoading: loadingEvals } =
     useEvaluations(patientId);
+  const { subscription } = useBilling();
 
   const evolution = useEvolution(evaluations, patient?.fullName ?? '');
 
@@ -56,6 +59,15 @@ const EvolutionPage: React.FC = () => {
             {evaluations.length !== 1 ? 's' : ''}
           </PageSubtitle>
         </div>
+
+        {/* Ver comentario em PatientDetailsPage: otimista durante o load. */}
+        <ExportPdfButton
+          patientId={patientId!}
+          patientName={patient?.fullName ?? ''}
+          hasFeature={subscription?.limits.exportPdf ?? true}
+          disabled={evaluations.length === 0}
+          variant="primary"
+        />
       </PageHeader>
 
       {evaluations.length === 0 ? (
