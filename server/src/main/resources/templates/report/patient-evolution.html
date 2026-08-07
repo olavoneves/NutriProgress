@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Relatorio de Evolucao</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 15mm;
+    }
+
+    body {
+      font-family: 'Helvetica', sans-serif;
+      color: #111827;
+      font-size: 11px;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* ---------- Cabecalho ---------- */
+    .header {
+      border-bottom: 3px solid #10b981;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .header-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: #111827;
+      margin: 0 0 4px 0;
+    }
+    .header-sub {
+      font-size: 12px;
+      color: #6b7280;
+      margin: 0;
+    }
+    .header-meta {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    /* ---------- Destaques ---------- */
+    .highlights {
+      margin-bottom: 22px;
+    }
+    .highlight {
+      border-left: 4px solid #d1d5db;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      background-color: #f9fafb;
+      page-break-inside: avoid;
+    }
+    .highlight.POSITIVE { border-left-color: #10b981; }
+    .highlight.NEGATIVE { border-left-color: #f59e0b; }
+    .highlight.NEUTRAL  { border-left-color: #9ca3af; }
+
+    .highlight-message {
+      font-size: 13px;
+      font-weight: bold;
+      color: #111827;
+      margin: 0;
+    }
+    .highlight-label {
+      font-size: 10px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 2px 0;
+    }
+
+    /* ---------- Secoes ---------- */
+    .section {
+      margin-bottom: 22px;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #374151;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 5px;
+      margin: 0 0 12px 0;
+      /* Um titulo nunca deve ficar orfao no fim da pagina anterior */
+      page-break-after: avoid;
+    }
+
+    /* ---------- Tabela ---------- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+    th {
+      background-color: #f3f4f6;
+      color: #374151;
+      font-weight: bold;
+      text-align: left;
+      padding: 7px 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    tr { page-break-inside: avoid; }
+    td.num, th.num { text-align: right; }
+
+    /* ---------- Observacoes ---------- */
+    .notes {
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 11px;
+      color: #14532d;
+    }
+
+    /* ---------- Assinatura ---------- */
+    .signature {
+      margin-top: 28px;
+      padding-top: 14px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .signature-name {
+      font-size: 13px;
+      font-weight: bold;
+      color: #111827;
+      margin: 0;
+    }
+    .signature-meta {
+      font-size: 10px;
+      color: #6b7280;
+      margin: 2px 0 0 0;
+    }
+
+    /* ---------- Rodape ---------- */
+    .footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 8px;
+      color: #d1d5db;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECALHO -->
+  <div class="header">
+    <p class="header-title">Relatório de Evolução</p>
+    <p class="header-sub" th:text="${report.patientName}">Paciente</p>
+    <p class="header-meta">
+      <span th:if="${report.patientAge != null}"
+            th:text="${report.patientAge} + ' anos · '">30 anos · </span>
+      <span th:text="'Período: ' + ${report.firstEvaluationDate}
+            + ' a ' + ${report.lastEvaluationDate}">Período</span>
+      <span th:text="' · ' + ${report.totalEvaluations}
+            + ' avaliações'"> · 3 avaliações</span>
+    </p>
+  </div>
+
+  <!-- DESTAQUES -->
+  <div class="highlights" th:if="${!report.highlights.isEmpty()}">
+    <div th:each="h : ${report.highlights}"
+         th:class="'highlight ' + ${h.direction}">
+      <p class="highlight-label" th:text="${h.label}">Peso</p>
+      <p class="highlight-message" th:text="${h.message}">
+        Você perdeu 3,5 kg
+      </p>
+    </div>
+  </div>
+
+  <!-- GRAFICO DE PESO -->
+  <div class="section">
+    <p class="section-title">Evolução do Peso</p>
+    <div th:utext="${report.weightChartSvg}"></div>
+  </div>
+
+  <!-- GRAFICO DE GORDURA -->
+  <div class="section">
+    <p class="section-title">Evolução da Gordura Corporal</p>
+    <div th:utext="${report.bodyFatChartSvg}"></div>
+  </div>
+
+  <!-- TABELA -->
+  <div class="section">
+    <p class="section-title">Histórico Completo</p>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Data</th>
+          <th class="num">Peso</th>
+          <th class="num">IMC</th>
+          <th class="num">Gordura</th>
+          <th class="num">Músculo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="row : ${report.evaluations}">
+          <td th:text="${row.number}">1</td>
+          <td th:text="${row.date}">01/01/2026</td>
+          <td class="num" th:text="${row.weight}">70,0 kg</td>
+          <td class="num" th:text="${row.bmi}">25,7</td>
+          <td class="num" th:text="${row.bodyFat}">22,5 %</td>
+          <td class="num" th:text="${row.muscleMass}">32,0 kg</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OBSERVACOES -->
+  <div class="section" th:if="${report.professionalNotes != null
+                              and !report.professionalNotes.isEmpty()}">
+    <p class="section-title">Observações da Nutricionista</p>
+    <div class="notes" th:text="${report.professionalNotes}">
+      Observações
+    </div>
+  </div>
+
+  <!-- ASSINATURA -->
+  <div class="signature">
+    <p class="signature-name" th:text="${report.nutritionistName}">
+      Dra. Nutricionista
+    </p>
+    <p class="signature-meta">
+      <span th:if="${report.nutritionistCrn != null}"
+            th:text="${report.nutritionistCrn}">CRN-3/12345</span>
+      <span th:if="${report.clinicName != null}"
+            th:text="' · ' + ${report.clinicName}"> · Clínica</span>
+    </p>
+    <p class="signature-meta"
+       th:text="'Emitido em ' + ${report.generatedAt}">
+      Emitido em 01/01/2026
+    </p>
+  </div>
+
+  <div class="footer">
+    Gerado com NutriProgress
+  </div>
+
+</body>
+</html>

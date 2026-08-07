@@ -18,6 +18,7 @@
 		<java.version>21</java.version>
 		<springdoc.version>2.6.0</springdoc.version>
 		<testcontainers.version>1.20.4</testcontainers.version>
+		<openhtmltopdf.version>1.0.10</openhtmltopdf.version>
 	</properties>
 
 	<dependencies>
@@ -119,6 +120,20 @@
 			<groupId>com.bucket4j</groupId>
 			<artifactId>bucket4j-core</artifactId>
 			<version>8.7.0</version>
+		</dependency>
+
+		<!-- Geracao de PDF a partir de HTML (relatorio de evolucao do paciente) -->
+		<dependency>
+			<groupId>com.openhtmltopdf</groupId>
+			<artifactId>openhtmltopdf-pdfbox</artifactId>
+			<version>${openhtmltopdf.version}</version>
+		</dependency>
+
+		<!-- Renderizacao dos graficos SVG embutidos no HTML do relatorio -->
+		<dependency>
+			<groupId>com.openhtmltopdf</groupId>
+			<artifactId>openhtmltopdf-svg-support</artifactId>
+			<version>${openhtmltopdf.version}</version>
 		</dependency>
 
 		<dependency>

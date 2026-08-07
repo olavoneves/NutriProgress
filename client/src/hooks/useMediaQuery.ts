@@ -1,30 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
+/**
+ * Assina uma media query via `useSyncExternalStore` — o valor inicial vem
+ * direto do snapshot, sem `setState` dentro de efeito.
+ */
 export function useMediaQuery(query: string): boolean {
-    const [matches, setMatches] = useState<boolean>(() => {
-        if (typeof window !== 'undefined') {
-            return window.matchMedia(query).matches;
-        }
-        return false;
-    });
+    const subscribe = useCallback(
+        (onStoreChange: () => void) => {
+            const mediaQuery = window.matchMedia(query);
+            mediaQuery.addEventListener('change', onStoreChange);
+            return () => {
+                mediaQuery.removeEventListener('change', onStoreChange);
+            };
+        },
+        [query],
+    );
 
-    useEffect(() => {
-        const mediaQuery = window.matchMedia(query);
+    const getSnapshot = useCallback(
+        () => window.matchMedia(query).matches,
+        [query],
+    );
 
-        const handleChange = (event: MediaQueryListEvent) => {
-            setMatches(event.matches);
-        };
+    // No SSR não há `window`; assume-se que a query não casa.
+    const getServerSnapshot = useCallback(() => false, []);
 
-        // Set initial value
-        setMatches(mediaQuery.matches);
-
-        // Listen for changes
-        mediaQuery.addEventListener('change', handleChange);
-
-        return () => {
-            mediaQuery.removeEventListener('change', handleChange);
-        };
-    }, [query]);
-
-    return matches;
+    return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
