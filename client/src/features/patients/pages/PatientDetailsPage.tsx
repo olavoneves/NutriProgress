@@ -10,6 +10,8 @@ import { useEvaluations, useEvaluationMutations }
   from '@features/evaluations/hooks';
 import { EvaluationCard }
   from '@features/evaluations/components/EvaluationCard';
+import { ExportPdfButton } from '@features/reports';
+import { useBilling } from '@features/billing';
 import { ROUTES } from '@routes/routes.config';
 import {
   PageHeader,
@@ -40,6 +42,7 @@ const PatientDetailsPage: React.FC = () => {
     useEvaluations(id);
   const { deleteEvaluation, isLoading: deletingEval } =
     useEvaluationMutations();
+  const { subscription } = useBilling();
 
   const [showArchiveModal, setShowArchiveModal] = useState(false);
 
@@ -93,6 +96,16 @@ const PatientDetailsPage: React.FC = () => {
         </div>
 
         <HeaderActions>
+          {/* Otimista enquanto a assinatura carrega: sem isso o cadeado
+              pisca para quem paga. Se o plano nao permitir, a API devolve
+              402 e o hook abre o mesmo modal de upsell. */}
+          <ExportPdfButton
+            patientId={id!}
+            patientName={patient.fullName}
+            hasFeature={subscription?.limits.exportPdf ?? true}
+            disabled={evaluations.length === 0}
+          />
+
           <Button
             variant="outline"
             onClick={() =>

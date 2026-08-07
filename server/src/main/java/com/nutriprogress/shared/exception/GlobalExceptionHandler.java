@@ -7,6 +7,7 @@ import com.nutriprogress.modules.auth.exception.UserAlreadyExistsException;
 import com.nutriprogress.modules.billing.exception.BillingException;
 import com.nutriprogress.modules.nutritionist.exception.SubscriptionLimitExceededException;
 import com.nutriprogress.modules.patient.exception.UnauthorizedPatientAccessException;
+import com.nutriprogress.modules.report.exception.FeatureNotAvailableException;
 import com.nutriprogress.shared.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -75,6 +77,18 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.PAYMENT_REQUIRED, ex.getMessage(), req.getRequestURI(), null);
     }
 
+    @ExceptionHandler(FeatureNotAvailableException.class)
+    public ResponseEntity<ErrorResponse> handleFeatureNotAvailable(FeatureNotAvailableException ex, HttpServletRequest req) {
+        log.warn("Feature bloqueada por plano: {}", ex.getMessage());
+        return build(
+                HttpStatus.PAYMENT_REQUIRED,
+                ex.getMessage(),
+                req.getRequestURI(),
+                null,
+                Map.of("requiredPlan", ex.getRequiredPlan())
+        );
+    }
+
     @ExceptionHandler(UnauthorizedPatientAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedPatientAccess(UnauthorizedPatientAccessException ex, HttpServletRequest req) {
         log.warn("Acesso nao autorizado a paciente: {}", ex.getMessage());
@@ -109,12 +123,18 @@ public class GlobalExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, String path, List<ErrorResponse.FieldError> fields) {
+        return build(status, message, path, fields, null);
+    }
+
+    private ResponseEntity<ErrorResponse> build(HttpStatus status, String message, String path,
+                                                List<ErrorResponse.FieldError> fields, Map<String, String> details) {
         ErrorResponse body = new ErrorResponse(
                 status.value(),
                 status.getReasonPhrase(),
                 message,
                 path,
                 fields,
+                details,
                 LocalDateTime.now()
         );
         return ResponseEntity.status(status).body(body);
